@@ -21,12 +21,18 @@ class APIPanel {
 
     setupEventListeners() {
         if (this.submitButton) {
-            // 确保移除已有监听器，防止重复绑定
-            this.submitButton.removeEventListener('click', this.handleSubmit);
+            // 先完全移除所有点击事件监听器
+            const newButton = this.submitButton.cloneNode(true);
+            if (this.submitButton.parentNode) {
+                this.submitButton.parentNode.replaceChild(newButton, this.submitButton);
+            }
+            this.submitButton = newButton;
+            
+            // 添加新的事件监听器
             this.submitButton.addEventListener('click', this.handleSubmit);
-            console.log('Submit 事件监听器已绑定');
+            console.log('Submit 事件监听器已绑定 (完全重置)');
         }
-
+    
         if (this.providerSelect) {
             this.providerSelect.removeEventListener('change', this.updateModelOptions);
             this.providerSelect.addEventListener('change', this.updateModelOptions);
@@ -100,20 +106,40 @@ class APIPanel {
     }
 }
 
+// 在 DOMContentLoaded 事件之前移除之前可能存在的事件监听器
+if (window.apiPanelTabSwitchHandler) {
+    document.removeEventListener('click', window.apiPanelTabSwitchHandler);
+}
+
 // 创建一个全局初始化函数，确保只有一个实例
 window.initializeAPIPanel = function() {
-    if (!window.apiPanelInstance) {
-        window.apiPanelInstance = new APIPanel();
+    // 检查之前创建的实例是否有效
+    const existingInstance = window.apiPanelInstance;
+    if (existingInstance) {
+        console.log('复用已存在的APIPanel实例');
+        // 更新实例
+        existingInstance.setupEventListeners();
+        return existingInstance;
     }
+    
+    // 创建新实例
+    console.log('创建新的APIPanel实例');
+    window.apiPanelInstance = new APIPanel();
     return window.apiPanelInstance;
 };
 
-// 修复 tab 切换时的实例使用
-document.addEventListener('click', function(event) {
+// 创建新的事件处理函数并保存引用
+window.apiPanelTabSwitchHandler = function(event) {
     if (event.target.classList.contains('tab-btn') && 
         event.target.getAttribute('data-target') === 'api-panel') {
+        console.log('切换到API面板');
         if (window.apiPanelInstance) {
+            // 切换面板时刷新模型选项，同时重置事件绑定
             window.apiPanelInstance.updateModelOptions();
+            window.apiPanelInstance.setupEventListeners();
         }
     }
-});
+};
+
+// 添加新的监听器
+document.addEventListener('click', window.apiPanelTabSwitchHandler);

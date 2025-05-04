@@ -155,12 +155,13 @@
     <script src="./frontend/js/right-section/status-panel.js"></script>
     <script src="./frontend/js/right-section/scene-panel.js"></script>
     <script>
-        // 确保API面板只被初始化一次
-        document.addEventListener('DOMContentLoaded', () => {
-            if (typeof window.initializeAPIPanel === 'function') {
+        // 确保API面板只被初始化一次，并且使用延迟执行，以便其他依赖项先加载
+        setTimeout(() => {
+            if (typeof window.initializeAPIPanel === 'function' && !window.apiPanelInstance) {
+                console.log('从index.html延迟初始化APIPanel');
                 window.initializeAPIPanel();
             }
-        });
+        }, 300);
     </script>
 </body>
 </html>
