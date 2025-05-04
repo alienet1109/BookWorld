@@ -67,6 +67,16 @@ class APIPanel {
         event.preventDefault();
         event.stopPropagation();
         
+        // 使用静态标记防止重复提交
+        if (APIPanel.isSubmitting) {
+            console.log('提交操作正在处理中，忽略重复点击');
+            return;
+        }
+        
+        // 设置标记，防止1秒内重复提交
+        APIPanel.isSubmitting = true;
+        setTimeout(() => { APIPanel.isSubmitting = false; }, 1000);
+        
         console.log('提交事件触发 - event target:', event.target.tagName);
 
         const provider = this.providerSelect.value;
@@ -117,6 +127,9 @@ class APIPanel {
     }
 }
 
+// 静态属性，用于防止重复提交
+APIPanel.isSubmitting = false;
+
 // 创建一个全局单例工厂函数
 window.getAPIPanel = function() {
     if (!window.apiPanelInstance) {
@@ -133,18 +146,28 @@ window.initializeAPIPanel = function() {
     return instance;
 };
 
-// 单一监听点：监听 tab 切换
-document.addEventListener('click', function(event) {
+// 移除原来的事件监听器
+if (window.apiPanelTabHandler) {
+    document.removeEventListener('click', window.apiPanelTabHandler);
+}
+
+// 创建新的、只处理tab切换的事件监听器
+window.apiPanelTabHandler = function(event) {
+    // 只处理tab按钮的点击，不关心其他元素
     if (event.target.classList.contains('tab-btn') && 
         event.target.getAttribute('data-target') === 'api-panel') {
         
         console.log('Tab切换到API面板');
-        // 确保实例存在，但不重新初始化
+        // 确保实例存在，但不涉及事件处理
         const instance = window.getAPIPanel();
-        // 只更新模型选项，不重新设置事件监听器
+        // 只更新模型选项
         instance.updateModelOptions();
     }
-});
+};
 
-// 确保只添加一次
+// 添加tab切换处理
+document.addEventListener('click', window.apiPanelTabHandler);
+
+// 静态标记，避免重复监听
+window.apiPanelJsInitialized = true;
 console.log('api-panel.js 加载完成');
