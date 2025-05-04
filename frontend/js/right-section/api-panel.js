@@ -34,17 +34,22 @@ class APIPanel {
 
     setupEventListeners() {
         if (this.submitButton) {
-            // 为安全起见，先移除可能存在的事件监听器
-            this.submitButton.removeEventListener('click', this.handleSubmit);
-            
-            // 直接在原始按钮上添加事件，不替换DOM
-            this.submitButton.addEventListener('click', this.handleSubmit);
-            console.log('Submit 事件监听器已绑定到原始按钮');
+            // 使用数据属性标记是否已绑定事件，而不是尝试移除再添加
+            if (!this.submitButton.hasAttribute('data-event-attached')) {
+                this.submitButton.addEventListener('click', this.handleSubmit);
+                this.submitButton.setAttribute('data-event-attached', 'true');
+                console.log('Submit 事件监听器已绑定到按钮，并标记为已绑定');
+            } else {
+                console.log('Submit 按钮已经有事件监听器，跳过绑定');
+            }
         }
     
         if (this.providerSelect) {
-            this.providerSelect.removeEventListener('change', this.updateModelOptions);
-            this.providerSelect.addEventListener('change', this.updateModelOptions);
+            // 对选择框也应用相同的模式
+            if (!this.providerSelect.hasAttribute('data-event-attached')) {
+                this.providerSelect.addEventListener('change', this.updateModelOptions);
+                this.providerSelect.setAttribute('data-event-attached', 'true');
+            }
         }
     }
 
@@ -67,6 +72,10 @@ class APIPanel {
         event.preventDefault();
         event.stopPropagation();
         
+        console.log('API提交处理开始 - 来源:', event.currentTarget.tagName, 
+                    '事件类型:', event.type,
+                    '时间戳:', new Date().toISOString());
+        
         // 使用静态标记防止重复提交
         if (APIPanel.isSubmitting) {
             console.log('提交操作正在处理中，忽略重复点击');
@@ -76,8 +85,6 @@ class APIPanel {
         // 设置标记，防止1秒内重复提交
         APIPanel.isSubmitting = true;
         setTimeout(() => { APIPanel.isSubmitting = false; }, 1000);
-        
-        console.log('提交事件触发 - event target:', event.target.tagName);
 
         const provider = this.providerSelect.value;
         const model = this.modelSelect.value;
@@ -89,6 +96,7 @@ class APIPanel {
             const message = window.i18n && window.i18n.get ? 
                 window.i18n.get('fillAllFields') : '请填写所有字段！';
             alert(message);
+            APIPanel.isSubmitting = false; // 重置提交状态
             return;
         }
 
@@ -105,6 +113,7 @@ class APIPanel {
             body: JSON.stringify(requestData)
         })
             .then(response => {
+                APIPanel.isSubmitting = false; // 重置提交状态
                 if (response.ok) {
                     // 使用 i18n 获取国际化文本
                     const message = window.i18n && window.i18n.get ? 
@@ -118,6 +127,7 @@ class APIPanel {
                 }
             })
             .catch(error => {
+                APIPanel.isSubmitting = false; // 重置提交状态
                 console.error('HTTP 请求失败:', error);
                 // 使用 i18n 获取国际化文本
                 const message = window.i18n && window.i18n.get ? 
@@ -142,7 +152,13 @@ window.getAPIPanel = function() {
 window.initializeAPIPanel = function() {
     const instance = window.getAPIPanel();
     // 确保只初始化一次
-    instance.init();
+    if (!window.apiPanelInitialized) {
+        instance.init();
+        window.apiPanelInitialized = true;
+        console.log('APIPanel 首次初始化完成并标记');
+    } else {
+        console.log('APIPanel 已初始化，跳过重复初始化');
+    }
     return instance;
 };
 
