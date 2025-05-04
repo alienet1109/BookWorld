@@ -96,22 +96,27 @@ class APIPanel {
     }
 }
 
-// 初始化 API 面板 - 修复这里防止重复初始化
+// 初始化 API 面板 - 防止重复初始化
 let apiPanelInstance = null;
 document.addEventListener('DOMContentLoaded', () => {
-    if (!apiPanelInstance) {
+    // 检查是否已经由 right-section.js 创建了实例
+    if (!window.apiPanelInstance) {
         apiPanelInstance = new APIPanel();
+        window.apiPanelInstance = apiPanelInstance; // 将实例存储到全局变量
+    } else {
+        apiPanelInstance = window.apiPanelInstance; // 使用全局实例
     }
 });
 
-// 修复 tab 切换后重复绑定问题
+// 修复 tab 切换时的实例使用
 document.addEventListener('click', function(event) {
     if (event.target.classList.contains('tab-btn') && 
         event.target.getAttribute('data-target') === 'api-panel') {
-        // 确保不重新初始化实例
-        if (apiPanelInstance) {
+        // 使用正确的实例
+        const instance = window.apiPanelInstance || apiPanelInstance;
+        if (instance) {
             // 仅更新模型选项，不重新绑定事件
-            apiPanelInstance.updateModelOptions();
+            instance.updateModelOptions();
         }
     }
 });
