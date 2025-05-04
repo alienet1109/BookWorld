@@ -17,7 +17,8 @@ const translations = {
         characterProfiles: "Character Profiles",
         apiProvider: "API Provider:",
         model: "Model:",
-        saveSettings: "Save Settings"
+        saveSettings: "Save Settings",
+        submit: "Submit"
     },
     zh: {
         start: "开始",
@@ -37,7 +38,8 @@ const translations = {
         characterProfiles: "角色档案",
         apiProvider: "API提供商:",
         model: "模型:",
-        saveSettings: "保存设置"
+        saveSettings: "保存设置",
+        submit: "提交"
     }
 };
 
