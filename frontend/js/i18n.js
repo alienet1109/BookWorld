@@ -19,11 +19,11 @@ const translations = {
         model: "Model:",
         saveSettings: "Save Settings",
         submit: "Submit",
-        // 新增翻译
         fillAllFields: "Please fill in all fields!",
         configSubmitted: "Configuration has been submitted to the server!",
         submitFailed: "Submission failed. Please check server status.",
-        networkError: "Submission failed. Please check network connection."
+        networkError: "Submission failed. Please check network connection.",
+        APIsettings: "API Key Config"
     },
     zh: {
         start: "开始",
@@ -45,11 +45,11 @@ const translations = {
         model: "模型:",
         saveSettings: "保存设置",
         submit: "提交",
-        // 新增翻译
         fillAllFields: "请填写所有字段！",
         configSubmitted: "配置已提交到服务器！",
         submitFailed: "提交失败，请检查服务器状态。",
-        networkError: "提交失败，请检查网络连接。"
+        networkError: "提交失败，请检查网络连接。",
+        APIsettings: "API Key设置"
     }
 };
 
