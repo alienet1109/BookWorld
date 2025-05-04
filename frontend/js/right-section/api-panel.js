@@ -55,33 +55,36 @@ class APIPanel {
             return;
         }
         
-        // *** 关键修改：移除所有点击处理程序 ***
-        // 首先，尝试删除任何可能存在的全局委托处理程序
-        document.removeEventListener('click', window.apiPanelClickHandler);
+        // 重要改动：彻底替换提交按钮
+        if (this.submitButton) {
+            // 完全替换按钮元素，清除所有现有事件监听器
+            const newButton = this.submitButton.cloneNode(true);
+            this.submitButton.parentNode.replaceChild(newButton, this.submitButton);
+            this.submitButton = newButton;
+            
+            // 直接绑定事件 - 只使用这一种方式，不再使用全局委托
+            this.submitButton.addEventListener('click', this.handleSubmit);
+            console.log('APIPanel: 提交按钮已替换并绑定了新的事件处理程序');
+        }
         
-        // 然后，创建一个新的全局点击处理程序
-        window.apiPanelClickHandler = (event) => {
-            // 如果点击的是提交按钮，则处理提交
-            if (event.target.classList.contains('api-submit-btn') || 
-                (event.target.parentElement && event.target.parentElement.classList.contains('api-submit-btn'))) {
-                console.log('APIPanel: 通过全局事件委托捕获到提交按钮点击');
-                this.handleSubmit(event);
-            }
-        };
-        
-        // 添加全局委托
-        document.addEventListener('click', window.apiPanelClickHandler);
-        
-        // 处理下拉框变化事件（这个保持不变）
+        // 同样处理下拉框
         if (this.providerSelect) {
             const newSelect = this.providerSelect.cloneNode(true);
             this.providerSelect.parentNode.replaceChild(newSelect, this.providerSelect);
             this.providerSelect = newSelect;
             this.providerSelect.addEventListener('change', this.updateModelOptions);
+            console.log('APIPanel: 下拉框已替换并绑定了新的事件处理程序');
+        }
+        
+        // 重要：移除任何全局委托事件处理程序
+        if (window.apiPanelClickHandler) {
+            document.removeEventListener('click', window.apiPanelClickHandler);
+            window.apiPanelClickHandler = null;
+            console.log('APIPanel: 已移除全局事件委托');
         }
         
         this.eventsBound = true;
-        console.log('APIPanel: 事件绑定完成 - 使用全局委托模式');
+        console.log('APIPanel: 事件绑定完成 - 仅使用直接绑定方式');
     }
 
     updateModelOptions() {
@@ -108,10 +111,13 @@ class APIPanel {
         event.preventDefault();
         event.stopPropagation();
         
-        // 输出点击事件的详细信息，帮助调试
-        console.log('APIPanel: 提交处理开始 -', 
+        // 增强调试信息
+        console.log('APIPanel: 提交处理开始', 
+                    'ID:', Math.random().toString(36).substr(2, 9),
                     '元素:', event.target.tagName,
-                    '路径:', event.composedPath().map(el => el.tagName || el.nodeName).join(' > '));
+                    '源:', event.currentTarget.tagName,
+                    '时间:', new Date().toISOString(),
+                    '事件类型:', event.type);
         
         // 使用静态标记防止重复提交
         if (APIPanel.isSubmitting) {
@@ -219,7 +225,7 @@ if (!window.apiPanelJsInitialized) {
         }
     };
     
-    // 注册全局tab切换事件
+    // 注册全局tab切换事件 - 只处理tab切换
     document.addEventListener('click', window.apiPanelTabHandler);
     
     // 设置已初始化标记
