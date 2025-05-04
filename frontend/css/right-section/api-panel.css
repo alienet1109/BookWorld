@@ -92,3 +92,27 @@ select {
 .api-container > label + input {
     margin-top: 5px;
 }
+
+.api-submit-btn {
+    padding: 10px 20px;
+    background-color: #5f3737;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+    margin-top: 15px;
+}
+
+/* 进一步优化输入框样式 */
+#api-key {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    border: 1px solid #5f3737;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}

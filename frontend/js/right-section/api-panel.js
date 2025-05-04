@@ -9,9 +9,6 @@ class APIPanel {
         // 绑定方法到当前实例，确保函数引用一致
         this.handleSubmit = this.handleSubmit.bind(this);
         this.updateModelOptions = this.updateModelOptions.bind(this);
-
-        // 保存原始按钮，用于事件重置
-        this.originalSubmitButton = this.submitButton;
         
         // 设置初始事件监听器
         this.setupEventListeners();
@@ -24,16 +21,31 @@ class APIPanel {
 
     setupEventListeners() {
         if (this.submitButton) {
-            // 移除旧按钮所有事件
-            const newButton = this.submitButton.cloneNode(true);
-            if (this.submitButton.parentNode) {
-                this.submitButton.parentNode.replaceChild(newButton, this.submitButton);
+            // 完全移除按钮的所有事件监听器
+            const oldButton = this.submitButton;
+            
+            // 创建一个全新的按钮元素（不使用cloneNode）
+            const newButton = document.createElement('button');
+            newButton.className = 'api-submit-btn';
+            
+            // 获取国际化文本
+            const submitText = window.i18n && window.i18n.get ? 
+                window.i18n.get('submit') : '提交';
+            
+            // 设置按钮内容（不使用h3标签）
+            newButton.textContent = submitText;
+            
+            // 替换原始按钮
+            if (oldButton.parentNode) {
+                oldButton.parentNode.replaceChild(newButton, oldButton);
             }
+            
+            // 更新引用
             this.submitButton = newButton;
             
-            // 重新添加单个事件监听器
+            // 绑定事件处理程序
             this.submitButton.addEventListener('click', this.handleSubmit);
-            console.log('Submit 事件监听器已绑定 (完全重置)');
+            console.log('Submit 事件监听器已绑定到新按钮（没有内部嵌套元素）');
         }
     
         if (this.providerSelect) {
@@ -61,7 +73,7 @@ class APIPanel {
         event.preventDefault();
         event.stopPropagation();
         
-        console.log('提交事件触发');
+        console.log('提交事件触发 - event target:', event.target.tagName);
 
         const provider = this.providerSelect.value;
         const model = this.modelSelect.value;
@@ -139,7 +151,7 @@ window.apiPanelTabSwitchHandler = function(event) {
         if (window.apiPanelInstance) {
             // 切换面板时只刷新模型选项，不重新绑定事件
             window.apiPanelInstance.updateModelOptions();
-            // 不要调用 setupEventListeners() 以避免重复绑定
+            // 不要重设事件监听器，避免重复绑定
         }
     }
 };
