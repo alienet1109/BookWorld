@@ -1,144 +1,87 @@
-// api-panel.js
 class APIPanel {
     constructor() {
-        // 初始化时从服务器获取配置
-        this.init();
-    }
-
-    async init() {
+        // 初始化时绑定 DOM 元素
         this.providerSelect = document.getElementById('api-provider');
         this.modelSelect = document.getElementById('api-model');
-        this.keysContainer = document.querySelector('.api-keys-container');
-        
-        // 从服务器获取配置
-        await this.fetchAPIConfigs();
-        
-        this.providerSelect.addEventListener('change', () => this.updateProviderUI());
-        this.initAPIForm();
-        this.updateProviderUI(); // 初始化UI
+        this.apiKeyInput = document.getElementById('api-key');
+        this.submitButton = document.querySelector('.api-submit-btn');
+
+        // 绑定方法到当前实例，确保函数引用一致
+        this.handleSubmit = this.handleSubmit.bind(this); // 确保 remove/add 监听器一致
+        this.updateModelOptions = this.updateModelOptions.bind(this);
+
+        // 设置初始事件监听器
+        this.setupEventListeners();
     }
 
-    async fetchAPIConfigs() {
-        try {
-            // 发送WebSocket消息请求配置
-            if (window.ws && window.ws.readyState === WebSocket.OPEN) {
-                window.ws.send(JSON.stringify({
-                    type: 'request_api_configs'
-                }));
-            }
+    setupEventListeners() {
+        if (this.submitButton) {
+            // 确保移除已有监听器，防止重复绑定
+            this.submitButton.removeEventListener('click', this.handleSubmit);
+            this.submitButton.addEventListener('click', this.handleSubmit);
+        }
 
-            // 添加一次性事件监听器来接收配置
-            await new Promise((resolve) => {
-                const configHandler = (event) => {
-                    const message = JSON.parse(event.data);
-                    if (message.type === 'api_configs') {
-                        this.modelConfigs = message.data;
-                        window.removeEventListener('message', configHandler);
-                        resolve();
-                    }
-                };
-                window.ws.addEventListener('message', configHandler);
-            });
-
-            // 初始化提供商选择器
-            this.initProviderSelect();
-        } catch (error) {
-            console.error('获取API配置失败:', error);
-            // 使用默认配置作为后备
-            this.modelConfigs = this.getDefaultConfigs();
-            this.initProviderSelect();
+        if (this.providerSelect) {
+            this.providerSelect.removeEventListener('change', this.updateModelOptions);
+            this.providerSelect.addEventListener('change', this.updateModelOptions);
         }
     }
 
-    getDefaultConfigs() {
-        // 默认配置作为后备
-        return {
-            openai: {
-                label: 'OpenAI API Key',
-                models: ['gpt-3.5-turbo', 'gpt-4'],
-                envKey: 'OPENAI_API_KEY'
-            },
-            anthropic: {
-                label: 'Claude API Key',
-                models: ['claude-3-opus', 'claude-3-sonnet'],
-                envKey: 'ANTHROPIC_API_KEY'
-            }
-        };
-    }
-
-    initProviderSelect() {
-        this.providerSelect.innerHTML = Object.entries(this.modelConfigs)
-            .map(([key, config]) => `
-                <option value="${key}">${config.label.split(' API Key')[0]}</option>
-            `)
-            .join('');
-    }
-
-    updateProviderUI() {
+    updateModelOptions() {
         const provider = this.providerSelect.value;
-        
-        // 更新API密钥输入区域
-        this.keysContainer.innerHTML = this.createKeyInput(
-            this.modelConfigs[provider].label,
-            this.modelConfigs[provider].envKey
-        );
+        const models = {
+            openai: ['gpt-3.5-turbo', 'gpt-4'],
+            anthropic: ['claude-3-opus', 'claude-3-sonnet'],
+            alibaba: ['qwen-turbo', 'qwen-max'],
+            openrouter: ['gpt-4o-mini']
+        };
 
-        // 更新模型选择器
-        this.modelSelect.innerHTML = this.modelConfigs[provider].models
+        this.modelSelect.innerHTML = models[provider]
             .map(model => `<option value="${model}">${model}</option>`)
             .join('');
-            
-        // 为密码可见性切换添加事件监听
-        const toggles = document.querySelectorAll('.toggle-visibility');
-        toggles.forEach(toggle => {
-            toggle.addEventListener('click', (e) => {
-                const input = e.target.previousElementSibling;
-                const type = input.type === 'password' ? 'text' : 'password';
-                input.type = type;
-                e.target.innerHTML = type === 'password' ? '👁️' : '👁️‍🗨️';
-            });
-        });
     }
 
-    createKeyInput(label, envKey) {
-        return `
-            <div class="api-key-input">
-                <label>${label}</label>
-                <div style="position: relative;">
-                    <input type="password" 
-                           data-env-key="${envKey}" 
-                           placeholder="Enter API Key">
-                    <span class="toggle-visibility">👁️</span>
-                </div>
-            </div>
-        `;
-    }
+    handleSubmit(event) {
+        // 防止表单默认提交行为
+        event.preventDefault();
 
-    initAPIForm() {
-        const submitBtn = document.querySelector('.api-submit-btn');
-        if (submitBtn) {
-            submitBtn.addEventListener('click', () => {
-                const provider = this.providerSelect.value;
-                const model = this.modelSelect.value;
-                const apiKey = document.querySelector(`[data-env-key="${this.modelConfigs[provider].envKey}"]`).value;
+        const provider = this.providerSelect.value;
+        const model = this.modelSelect.value;
+        const apiKey = this.apiKeyInput.value;
 
-                if (window.ws && window.ws.readyState === WebSocket.OPEN) {
-                    window.ws.send(JSON.stringify({
-                        type: 'api_settings',
-                        data: {
-                            provider: provider,
-                            model: model,
-                            apiKey: apiKey,
-                            envKey: this.modelConfigs[provider].envKey
-                        }
-                    }));
-                }
-            });
+        // 检查字段是否填写完整
+        if (!provider || !model || !apiKey) {
+            alert('请填写所有字段！');
+            return;
         }
+
+        const requestData = {
+            provider: provider,
+            model: model,
+            apiKey: apiKey
+        };
+
+        // 直接通过 HTTP 提交
+        fetch('/api/save-config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestData)
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert('配置已提交到服务器！');
+                } else {
+                    alert('提交失败，请检查服务器状态。');
+                }
+            })
+            .catch(error => {
+                console.error('HTTP 请求失败:', error);
+                alert('提交失败，请检查网络连接。');
+            });
     }
 }
 
-// 初始化API面板
+// 初始化 API 面板
 document.addEventListener('DOMContentLoaded', () => {
     new APIPanel();
 });
