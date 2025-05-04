@@ -1,14 +1,14 @@
 // right-section.js
 class RightSection {
-    // 修改构造函数中的部分代码
     constructor() {
         this.currentTab = 'status-panel'; // 默认激活的标签
         
-        // 确保APIPanel只被初始化一次
+        // 确保不重复初始化
         setTimeout(() => {
-            if (typeof window.initializeAPIPanel === 'function') {
-                console.log('从right-section.js引用APIPanel实例');
-                this.apiPanel = window.apiPanelInstance || window.initializeAPIPanel();
+            // 只引用实例，不初始化
+            if (typeof window.getAPIPanel === 'function') {
+                this.apiPanel = window.getAPIPanel();
+                console.log('RightSection: 引用APIPanel实例');
             }
             this.settingsPanel = new SettingsPanel();
         }, 200);

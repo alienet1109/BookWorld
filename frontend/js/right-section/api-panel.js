@@ -6,46 +6,40 @@ class APIPanel {
         this.apiKeyInput = document.getElementById('api-key');
         this.submitButton = document.querySelector('.api-submit-btn');
 
+        // 标记这个实例已经初始化
+        this.initialized = false;
+
         // 绑定方法到当前实例，确保函数引用一致
         this.handleSubmit = this.handleSubmit.bind(this);
         this.updateModelOptions = this.updateModelOptions.bind(this);
         
-        // 设置初始事件监听器
-        this.setupEventListeners();
-        
         // 初始化模型选项
         this.updateModelOptions();
         
-        console.log('APIPanel 实例已创建');
+        console.log('APIPanel 实例已创建, 等待初始化事件绑定');
+    }
+
+    init() {
+        // 只初始化一次
+        if (this.initialized) {
+            console.log('APIPanel 已经初始化过，跳过');
+            return;
+        }
+        
+        // 设置事件监听器
+        this.setupEventListeners();
+        this.initialized = true;
+        console.log('APIPanel 实例已完成初始化');
     }
 
     setupEventListeners() {
         if (this.submitButton) {
-            // 完全移除按钮的所有事件监听器
-            const oldButton = this.submitButton;
+            // 为安全起见，先移除可能存在的事件监听器
+            this.submitButton.removeEventListener('click', this.handleSubmit);
             
-            // 创建一个全新的按钮元素（不使用cloneNode）
-            const newButton = document.createElement('button');
-            newButton.className = 'api-submit-btn';
-            
-            // 获取国际化文本
-            const submitText = window.i18n && window.i18n.get ? 
-                window.i18n.get('submit') : '提交';
-            
-            // 设置按钮内容（不使用h3标签）
-            newButton.textContent = submitText;
-            
-            // 替换原始按钮
-            if (oldButton.parentNode) {
-                oldButton.parentNode.replaceChild(newButton, oldButton);
-            }
-            
-            // 更新引用
-            this.submitButton = newButton;
-            
-            // 绑定事件处理程序
+            // 直接在原始按钮上添加事件，不替换DOM
             this.submitButton.addEventListener('click', this.handleSubmit);
-            console.log('Submit 事件监听器已绑定到新按钮（没有内部嵌套元素）');
+            console.log('Submit 事件监听器已绑定到原始按钮');
         }
     
         if (this.providerSelect) {
@@ -123,38 +117,34 @@ class APIPanel {
     }
 }
 
-// 在 DOMContentLoaded 事件之前移除之前可能存在的事件监听器
-if (window.apiPanelTabSwitchHandler) {
-    document.removeEventListener('click', window.apiPanelTabSwitchHandler);
-}
-
-// 创建一个全局初始化函数，确保只有一个实例
-window.initializeAPIPanel = function() {
-    // 检查之前创建的实例是否有效
-    const existingInstance = window.apiPanelInstance;
-    if (existingInstance) {
-        console.log('复用已存在的APIPanel实例');
-        return existingInstance;
+// 创建一个全局单例工厂函数
+window.getAPIPanel = function() {
+    if (!window.apiPanelInstance) {
+        window.apiPanelInstance = new APIPanel();
     }
-    
-    // 创建新实例
-    console.log('创建新的APIPanel实例');
-    window.apiPanelInstance = new APIPanel();
     return window.apiPanelInstance;
 };
 
-// 创建新的事件处理函数并保存引用
-window.apiPanelTabSwitchHandler = function(event) {
-    if (event.target.classList.contains('tab-btn') && 
-        event.target.getAttribute('data-target') === 'api-panel') {
-        console.log('切换到API面板');
-        if (window.apiPanelInstance) {
-            // 切换面板时只刷新模型选项，不重新绑定事件
-            window.apiPanelInstance.updateModelOptions();
-            // 不要重设事件监听器，避免重复绑定
-        }
-    }
+// 专门用于初始化的函数，确保只初始化一次
+window.initializeAPIPanel = function() {
+    const instance = window.getAPIPanel();
+    // 确保只初始化一次
+    instance.init();
+    return instance;
 };
 
-// 添加新的监听器
-document.addEventListener('click', window.apiPanelTabSwitchHandler);
+// 单一监听点：监听 tab 切换
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('tab-btn') && 
+        event.target.getAttribute('data-target') === 'api-panel') {
+        
+        console.log('Tab切换到API面板');
+        // 确保实例存在，但不重新初始化
+        const instance = window.getAPIPanel();
+        // 只更新模型选项，不重新设置事件监听器
+        instance.updateModelOptions();
+    }
+});
+
+// 确保只添加一次
+console.log('api-panel.js 加载完成');
