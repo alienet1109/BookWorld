@@ -1,6 +1,6 @@
 class APIPanel {
     constructor() {
-        // 强制单例模式 - 如果实例已存在，直接返回
+        // 强制单例模式
         if (window.apiPanelInstance) {
             console.warn('APIPanel已存在实例，返回现有实例');
             return window.apiPanelInstance;
@@ -23,7 +23,7 @@ class APIPanel {
         // 初始化模型选项
         this.updateModelOptions();
         
-        // 将实例保存到全局
+        // 设置单例
         window.apiPanelInstance = this;
         console.log('APIPanel: 新实例已创建');
     }
@@ -55,29 +55,33 @@ class APIPanel {
             return;
         }
         
-        // 处理提交按钮
-        if (this.submitButton) {
-            // 完全替换按钮以清除所有之前可能绑定的事件
-            const newButton = this.submitButton.cloneNode(true);
-            this.submitButton.parentNode.replaceChild(newButton, this.submitButton);
-            this.submitButton = newButton;
-            
-            // 为克隆后的新按钮添加事件监听器
-            this.submitButton.addEventListener('click', this.handleSubmit);
-            console.log('APIPanel: 提交按钮事件监听器已绑定到克隆按钮');
-        }
-    
-        // 处理供应商选择下拉框
+        // *** 关键修改：移除所有点击处理程序 ***
+        // 首先，尝试删除任何可能存在的全局委托处理程序
+        document.removeEventListener('click', window.apiPanelClickHandler);
+        
+        // 然后，创建一个新的全局点击处理程序
+        window.apiPanelClickHandler = (event) => {
+            // 如果点击的是提交按钮，则处理提交
+            if (event.target.classList.contains('api-submit-btn') || 
+                (event.target.parentElement && event.target.parentElement.classList.contains('api-submit-btn'))) {
+                console.log('APIPanel: 通过全局事件委托捕获到提交按钮点击');
+                this.handleSubmit(event);
+            }
+        };
+        
+        // 添加全局委托
+        document.addEventListener('click', window.apiPanelClickHandler);
+        
+        // 处理下拉框变化事件（这个保持不变）
         if (this.providerSelect) {
-            // 同样替换元素以清除事件
             const newSelect = this.providerSelect.cloneNode(true);
             this.providerSelect.parentNode.replaceChild(newSelect, this.providerSelect);
             this.providerSelect = newSelect;
             this.providerSelect.addEventListener('change', this.updateModelOptions);
-            console.log('APIPanel: 供应商选择框事件已绑定到克隆元素');
         }
         
         this.eventsBound = true;
+        console.log('APIPanel: 事件绑定完成 - 使用全局委托模式');
     }
 
     updateModelOptions() {
@@ -97,8 +101,6 @@ class APIPanel {
         this.modelSelect.innerHTML = models[provider]
             .map(model => `<option value="${model}">${model}</option>`)
             .join('');
-            
-        console.log(`APIPanel: 已更新模型列表为${provider}供应商的选项`);
     }
 
     handleSubmit(event) {
@@ -106,11 +108,10 @@ class APIPanel {
         event.preventDefault();
         event.stopPropagation();
         
-        // 详细日志，帮助调试
+        // 输出点击事件的详细信息，帮助调试
         console.log('APIPanel: 提交处理开始 -', 
                     '元素:', event.target.tagName,
-                    '事件类型:', event.type,
-                    '时间戳:', new Date().toISOString());
+                    '路径:', event.composedPath().map(el => el.tagName || el.nodeName).join(' > '));
         
         // 使用静态标记防止重复提交
         if (APIPanel.isSubmitting) {
@@ -129,11 +130,10 @@ class APIPanel {
 
         // 检查字段是否填写完整
         if (!provider || !model || !apiKey) {
-            // 使用 i18n 获取国际化文本
             const message = window.i18n && window.i18n.get ? 
                 window.i18n.get('fillAllFields') : '请填写所有字段！';
             alert(message);
-            APIPanel.isSubmitting = false; // 重置提交状态
+            APIPanel.isSubmitting = false;
             return;
         }
 
@@ -150,25 +150,20 @@ class APIPanel {
             body: JSON.stringify(requestData)
         })
             .then(response => {
-                APIPanel.isSubmitting = false; // 重置提交状态
+                APIPanel.isSubmitting = false;
                 if (response.ok) {
-                    // 使用 i18n 获取国际化文本
                     const message = window.i18n && window.i18n.get ? 
                         window.i18n.get('configSubmitted') : '配置已提交到服务器！';
                     alert(message);
-                    console.log('APIPanel: 配置已成功提交');
                 } else {
-                    // 使用 i18n 获取国际化文本
                     const message = window.i18n && window.i18n.get ? 
                         window.i18n.get('submitFailed') : '提交失败，请检查服务器状态。';
                     alert(message);
-                    console.error('APIPanel: 服务器响应失败', response.status);
                 }
             })
             .catch(error => {
-                APIPanel.isSubmitting = false; // 重置提交状态
+                APIPanel.isSubmitting = false;
                 console.error('APIPanel: HTTP请求失败:', error);
-                // 使用 i18n 获取国际化文本
                 const message = window.i18n && window.i18n.get ? 
                     window.i18n.get('networkError') : '提交失败，请检查网络连接。';
                 alert(message);
@@ -201,17 +196,16 @@ if (!window.apiPanelJsInitialized) {
         
         // 标记为已初始化
         window.apiPanelInitialized = true;
-        console.log('APIPanel: 首次全局初始化完成');
         
         return instance;
     };
     
-    // 确保只有一个tab事件处理器
+    // 清除任何可能存在的旧的tab处理器
     if (window.apiPanelTabHandler) {
         document.removeEventListener('click', window.apiPanelTabHandler);
     }
     
-    // 定义tab切换处理函数
+    // 定义tab切换处理函数 - 仅处理tab切换，不处理提交
     window.apiPanelTabHandler = function(event) {
         // 只处理API面板tab按钮的点击
         if (event.target.classList.contains('tab-btn') && 
@@ -230,7 +224,4 @@ if (!window.apiPanelJsInitialized) {
     
     // 设置已初始化标记
     window.apiPanelJsInitialized = true;
-    console.log('APIPanel: 脚本初始化标记已设置，防止重复执行');
 }
-
-console.log('APIPanel: api-panel.js 文件已完成加载');
