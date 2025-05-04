@@ -14,8 +14,7 @@ class APIPanel {
 
         // 初始化标记
         this.initialized = false;
-        this.eventsBound = false;
-
+        
         // 绑定方法到实例，确保函数引用一致
         this.handleSubmit = this.handleSubmit.bind(this);
         this.updateModelOptions = this.updateModelOptions.bind(this);
@@ -25,7 +24,7 @@ class APIPanel {
         
         // 设置单例
         window.apiPanelInstance = this;
-        console.log('APIPanel: 新实例已创建');
+        console.log('APIPanel: 新实例已创建，但尚未初始化事件');
     }
 
     init() {
@@ -49,42 +48,34 @@ class APIPanel {
     }
 
     setupEventListeners() {
-        // 防止重复绑定事件
-        if (this.eventsBound) {
-            console.log('APIPanel: 事件已绑定，跳过');
-            return;
-        }
-        
-        // 重要改动：彻底替换提交按钮
+        // 关键改变: 使用DOM元素的data属性作为标记
         if (this.submitButton) {
-            // 完全替换按钮元素，清除所有现有事件监听器
-            const newButton = this.submitButton.cloneNode(true);
-            this.submitButton.parentNode.replaceChild(newButton, this.submitButton);
-            this.submitButton = newButton;
-            
-            // 直接绑定事件 - 只使用这一种方式，不再使用全局委托
-            this.submitButton.addEventListener('click', this.handleSubmit);
-            console.log('APIPanel: 提交按钮已替换并绑定了新的事件处理程序');
+            // 检查按钮是否已有事件绑定标记
+            if (this.submitButton.getAttribute('data-has-click-handler') === 'true') {
+                console.log('APIPanel: 提交按钮已绑定事件，跳过');
+            } else {
+                // 首先移除可能存在的旧事件监听器
+                this.submitButton.removeEventListener('click', this.handleSubmit);
+                
+                // 添加新的事件监听器
+                this.submitButton.addEventListener('click', this.handleSubmit);
+                
+                // 使用DOM属性标记已绑定
+                this.submitButton.setAttribute('data-has-click-handler', 'true');
+                console.log('APIPanel: 提交按钮事件已绑定并标记到DOM元素');
+            }
         }
         
-        // 同样处理下拉框
         if (this.providerSelect) {
-            const newSelect = this.providerSelect.cloneNode(true);
-            this.providerSelect.parentNode.replaceChild(newSelect, this.providerSelect);
-            this.providerSelect = newSelect;
-            this.providerSelect.addEventListener('change', this.updateModelOptions);
-            console.log('APIPanel: 下拉框已替换并绑定了新的事件处理程序');
+            // 同样处理下拉框
+            if (this.providerSelect.getAttribute('data-has-change-handler') === 'true') {
+                console.log('APIPanel: 下拉框已绑定事件，跳过');
+            } else {
+                this.providerSelect.removeEventListener('change', this.updateModelOptions);
+                this.providerSelect.addEventListener('change', this.updateModelOptions);
+                this.providerSelect.setAttribute('data-has-change-handler', 'true');
+            }
         }
-        
-        // 重要：移除任何全局委托事件处理程序
-        if (window.apiPanelClickHandler) {
-            document.removeEventListener('click', window.apiPanelClickHandler);
-            window.apiPanelClickHandler = null;
-            console.log('APIPanel: 已移除全局事件委托');
-        }
-        
-        this.eventsBound = true;
-        console.log('APIPanel: 事件绑定完成 - 仅使用直接绑定方式');
     }
 
     updateModelOptions() {
@@ -111,13 +102,9 @@ class APIPanel {
         event.preventDefault();
         event.stopPropagation();
         
-        // 增强调试信息
-        console.log('APIPanel: 提交处理开始', 
-                    'ID:', Math.random().toString(36).substr(2, 9),
-                    '元素:', event.target.tagName,
-                    '源:', event.currentTarget.tagName,
-                    '时间:', new Date().toISOString(),
-                    '事件类型:', event.type);
+        console.log('APIPanel: 提交处理开始 -', 
+                   'ID:', Math.random().toString(36).substr(2, 9), 
+                   '时间:', new Date().toISOString());
         
         // 使用静态标记防止重复提交
         if (APIPanel.isSubmitting) {
@@ -180,7 +167,7 @@ class APIPanel {
 // 防重复提交的静态标记
 APIPanel.isSubmitting = false;
 
-// 下面的代码只执行一次，防止多次引入脚本时重复执行
+// 所有全局代码放在一个条件中，确保只执行一次
 if (!window.apiPanelJsInitialized) {
     // 单例获取函数
     window.getAPIPanel = function() {
@@ -206,12 +193,11 @@ if (!window.apiPanelJsInitialized) {
         return instance;
     };
     
-    // 清除任何可能存在的旧的tab处理器
+    // 处理标签切换事件 - 修改为不再获取新实例
     if (window.apiPanelTabHandler) {
         document.removeEventListener('click', window.apiPanelTabHandler);
     }
     
-    // 定义tab切换处理函数 - 仅处理tab切换，不处理提交
     window.apiPanelTabHandler = function(event) {
         // 只处理API面板tab按钮的点击
         if (event.target.classList.contains('tab-btn') && 
@@ -219,15 +205,19 @@ if (!window.apiPanelJsInitialized) {
             
             console.log('APIPanel: Tab切换到API面板');
             
-            // 获取实例但不做额外初始化，只更新模型选项
-            const instance = window.apiPanelInstance || window.getAPIPanel();
-            instance.updateModelOptions();
+            // 关键修改：只在已经初始化的情况下更新模型选项
+            if (window.apiPanelInstance) {
+                window.apiPanelInstance.updateModelOptions();
+                console.log('APIPanel: 使用现有实例更新模型选项');
+            }
+            // 不再调用getAPIPanel()，避免触发潜在的重复初始化
         }
     };
     
-    // 注册全局tab切换事件 - 只处理tab切换
+    // 添加标签切换事件处理
     document.addEventListener('click', window.apiPanelTabHandler);
     
     // 设置已初始化标记
     window.apiPanelJsInitialized = true;
+    console.log('APIPanel: 脚本全局初始化完成');
 }
