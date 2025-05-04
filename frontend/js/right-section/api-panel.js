@@ -10,6 +10,9 @@ class APIPanel {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.updateModelOptions = this.updateModelOptions.bind(this);
 
+        // 保存原始按钮，用于事件重置
+        this.originalSubmitButton = this.submitButton;
+        
         // 设置初始事件监听器
         this.setupEventListeners();
         
@@ -21,14 +24,14 @@ class APIPanel {
 
     setupEventListeners() {
         if (this.submitButton) {
-            // 先完全移除所有点击事件监听器
+            // 移除旧按钮所有事件
             const newButton = this.submitButton.cloneNode(true);
             if (this.submitButton.parentNode) {
                 this.submitButton.parentNode.replaceChild(newButton, this.submitButton);
             }
             this.submitButton = newButton;
             
-            // 添加新的事件监听器
+            // 重新添加单个事件监听器
             this.submitButton.addEventListener('click', this.handleSubmit);
             console.log('Submit 事件监听器已绑定 (完全重置)');
         }
@@ -54,8 +57,10 @@ class APIPanel {
     }
 
     handleSubmit(event) {
-        // 防止表单默认提交行为
+        // 防止表单默认提交行为和事件冒泡
         event.preventDefault();
+        event.stopPropagation();
+        
         console.log('提交事件触发');
 
         const provider = this.providerSelect.value;
@@ -117,8 +122,6 @@ window.initializeAPIPanel = function() {
     const existingInstance = window.apiPanelInstance;
     if (existingInstance) {
         console.log('复用已存在的APIPanel实例');
-        // 更新实例
-        existingInstance.setupEventListeners();
         return existingInstance;
     }
     
@@ -134,9 +137,9 @@ window.apiPanelTabSwitchHandler = function(event) {
         event.target.getAttribute('data-target') === 'api-panel') {
         console.log('切换到API面板');
         if (window.apiPanelInstance) {
-            // 切换面板时刷新模型选项，同时重置事件绑定
+            // 切换面板时只刷新模型选项，不重新绑定事件
             window.apiPanelInstance.updateModelOptions();
-            window.apiPanelInstance.setupEventListeners();
+            // 不要调用 setupEventListeners() 以避免重复绑定
         }
     }
 };
