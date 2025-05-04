@@ -96,10 +96,22 @@ class APIPanel {
     }
 }
 
-// 初始化 API 面板 - 使用单例模式防止重复创建
+// 初始化 API 面板 - 修复这里防止重复初始化
 let apiPanelInstance = null;
 document.addEventListener('DOMContentLoaded', () => {
     if (!apiPanelInstance) {
         apiPanelInstance = new APIPanel();
+    }
+});
+
+// 修复 tab 切换后重复绑定问题
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('tab-btn') && 
+        event.target.getAttribute('data-target') === 'api-panel') {
+        // 确保不重新初始化实例
+        if (apiPanelInstance) {
+            // 仅更新模型选项，不重新绑定事件
+            apiPanelInstance.updateModelOptions();
+        }
     }
 });
