@@ -158,11 +158,14 @@
         // 整合初始化逻辑，仅初始化一次
         document.addEventListener('DOMContentLoaded', () => {
             console.log('DOMContentLoaded: 开始统一初始化');
-            // 延迟初始化以确保所有依赖项已加载
+            
+            // 创建右侧面板实例
+            window.rightSectionInstance = new window.RightSection();
+            console.log('主界面右侧面板已初始化');
+            
+            // 延迟初始化API面板以确保所有依赖项已加载
             setTimeout(() => {
-                console.log('延迟初始化: 确保依赖已加载');
-                // 获取实例，但不初始化
-                window.getAPIPanel();
+                console.log('延迟初始化API面板: 确保依赖已加载');
                 // 仅在页面完全加载后进行一次性初始化
                 window.initializeAPIPanel();
             }, 500);
