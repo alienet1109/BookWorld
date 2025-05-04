@@ -158,17 +158,42 @@
         // 整合初始化逻辑，仅初始化一次
         document.addEventListener('DOMContentLoaded', () => {
             console.log('DOMContentLoaded: 开始统一初始化');
-            
-            // 创建右侧面板实例
-            window.rightSectionInstance = new window.RightSection();
-            console.log('主界面右侧面板已初始化');
-            
-            // 延迟初始化API面板以确保所有依赖项已加载
+
+            // 创建右侧面板实例 (Keep as is)
+            if (window.RightSection) {
+                 // Ensure it's only created once if RightSection isn't a singleton itself
+                 if (!window.rightSectionInstance) {
+                    window.rightSectionInstance = new window.RightSection();
+                    console.log('主界面右侧面板已初始化');
+                 }
+            } else {
+                 console.error("RightSection class not found during initialization.");
+            }
+
+
+            // 延迟初始化API面板以确保所有依赖项已加载 (Keep setTimeout structure)
             setTimeout(() => {
                 console.log('延迟初始化API面板: 确保依赖已加载');
-                // 仅在页面完全加载后进行一次性初始化
-                window.initializeAPIPanel();
-            }, 500);
+
+                // --- MODIFIED PART ---
+                // Directly get/create the APIPanel instance and call init() if needed
+                if (window.APIPanel) {
+                    const apiPanelInstance = new window.APIPanel(); // Constructor handles singleton
+                    // Check if the instance exists and if its listeners haven't been initialized yet
+                    if (apiPanelInstance && !apiPanelInstance.initialized) {
+                        console.log('APIPanel: Calling init() to attach listeners.');
+                        apiPanelInstance.init();
+                    } else if (apiPanelInstance && apiPanelInstance.initialized) {
+                         console.log('APIPanel: Instance found, listeners already initialized.');
+                    } else if (!apiPanelInstance) {
+                         console.error('APIPanel: Failed to get instance within setTimeout.');
+                    }
+                } else {
+                    console.error('APIPanel class not found within setTimeout!');
+                }
+                // --- END MODIFIED PART ---
+
+            }, 500); // Keep original delay
         });
     </script>
 </body>

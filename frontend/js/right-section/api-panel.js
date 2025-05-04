@@ -2,131 +2,160 @@ class APIPanel {
     constructor() {
         // 强制单例模式
         if (window.apiPanelInstance) {
-            console.warn('APIPanel已存在实例，返回现有实例');
+            console.warn('APIPanel: Instance already exists, returning existing one.');
             return window.apiPanelInstance;
         }
-        
+        console.log('APIPanel: Creating new instance.');
+
         // 初始化DOM元素引用
         this.providerSelect = document.getElementById('api-provider');
         this.modelSelect = document.getElementById('api-model');
         this.apiKeyInput = document.getElementById('api-key');
-        this.submitButton = document.querySelector('.api-submit-btn');
+        // Use a more specific selector if multiple buttons might exist
+        this.submitButton = document.querySelector('#api-panel .api-submit-btn');
 
-        // 初始化标记
+        // Check if elements were found
+        if (!this.providerSelect || !this.modelSelect || !this.apiKeyInput || !this.submitButton) {
+            console.error("APIPanel: One or more required DOM elements not found during construction.");
+        }
+
+        // 初始化标记 - Tracks if listeners have been set up
         this.initialized = false;
-        
+
         // 绑定方法到实例，确保函数引用一致
         this.handleSubmit = this.handleSubmit.bind(this);
         this.updateModelOptions = this.updateModelOptions.bind(this);
-        
-        // 初始化模型选项
-        this.updateModelOptions();
-        
+
+        // 初始化模型选项 (Only if elements exist)
+        if (this.providerSelect && this.modelSelect) {
+            this.updateModelOptions();
+        }
+
         // 设置单例
         window.apiPanelInstance = this;
-        console.log('APIPanel: 新实例已创建，但尚未初始化事件');
+        console.log('APIPanel: New instance created.');
     }
 
     init() {
-        // 只初始化一次
+        // 只初始化一次事件监听器
         if (this.initialized) {
-            console.log('APIPanel: 已初始化，跳过重复初始化');
+            console.log('APIPanel: Listeners already initialized, skipping.');
             return;
         }
-        
-        // 确保DOM元素已加载
-        if (!document.getElementById('api-panel')) {
-            console.warn('APIPanel: DOM未准备好，100ms后重试');
-            setTimeout(() => this.init(), 100);
-            return;
+
+        // Re-check elements before attaching listeners
+        if (!this.providerSelect || !this.modelSelect || !this.apiKeyInput || !this.submitButton) {
+             console.error("APIPanel: Cannot init listeners, required DOM elements missing.");
+             return;
         }
-        
-        // 设置事件监听器
+
+        console.log('APIPanel: Initializing event listeners.');
         this.setupEventListeners();
-        this.initialized = true;
-        console.log('APIPanel: 初始化完成');
+        this.initialized = true; // Mark as initialized *after* setup
+        console.log('APIPanel: Event listeners initialized successfully.');
     }
 
     setupEventListeners() {
-        // 关键改变: 使用DOM元素的data属性作为标记
+        // Submit Button Listener
         if (this.submitButton) {
-            // 检查按钮是否已有事件绑定标记
-            if (this.submitButton.getAttribute('data-has-click-handler') === 'true') {
-                console.log('APIPanel: 提交按钮已绑定事件，跳过');
-            } else {
-                // 首先移除可能存在的旧事件监听器
-                this.submitButton.removeEventListener('click', this.handleSubmit);
-                
-                // 添加新的事件监听器
-                this.submitButton.addEventListener('click', this.handleSubmit);
-                
-                // 使用DOM属性标记已绑定
-                this.submitButton.setAttribute('data-has-click-handler', 'true');
-                console.log('APIPanel: 提交按钮事件已绑定并标记到DOM元素');
-            }
+            // Remove any previous listener first (safer)
+            this.submitButton.removeEventListener('click', this.handleSubmit);
+            // Add the listener
+            this.submitButton.addEventListener('click', this.handleSubmit);
+            console.log('APIPanel: Submit button listener attached.');
         }
-        
+
+        // Provider Select Listener
         if (this.providerSelect) {
-            // 同样处理下拉框
-            if (this.providerSelect.getAttribute('data-has-change-handler') === 'true') {
-                console.log('APIPanel: 下拉框已绑定事件，跳过');
-            } else {
-                this.providerSelect.removeEventListener('change', this.updateModelOptions);
-                this.providerSelect.addEventListener('change', this.updateModelOptions);
-                this.providerSelect.setAttribute('data-has-change-handler', 'true');
-            }
+            // Remove any previous listener first (safer)
+            this.providerSelect.removeEventListener('change', this.updateModelOptions);
+            // Add the listener
+            this.providerSelect.addEventListener('change', this.updateModelOptions);
+            console.log('APIPanel: Provider select listener attached.');
         }
     }
 
     updateModelOptions() {
         if (!this.providerSelect || !this.modelSelect) {
-            console.warn('APIPanel: DOM引用无效，无法更新模型选项');
+            console.warn('APIPanel: DOM elements missing for updateModelOptions.');
             return;
         }
-        
+
         const provider = this.providerSelect.value;
         const models = {
-            openai: ['gpt-3.5-turbo', 'gpt-4'],
-            anthropic: ['claude-3-opus', 'claude-3-sonnet'],
-            alibaba: ['qwen-turbo', 'qwen-max'],
-            openrouter: ['gpt-4o-mini']
+            openai: ['gpt-3.5-turbo', 'gpt-4', 'gpt-4o'], // Example update
+            anthropic: ['claude-3-opus-20240229', 'claude-3-sonnet-20240229', 'claude-3-haiku-20240307'], // Example update
+            alibaba: ['qwen-turbo', 'qwen-plus', 'qwen-max'], // Example update
+            openrouter: ['google/gemini-pro', 'mistralai/mistral-7b-instruct'] // Example update
         };
 
-        this.modelSelect.innerHTML = models[provider]
-            .map(model => `<option value="${model}">${model}</option>`)
-            .join('');
+        const currentModelValue = this.modelSelect.value;
+        this.modelSelect.innerHTML = ''; // Clear existing
+
+        if (models[provider] && models[provider].length > 0) {
+            models[provider].forEach(model => {
+                const option = document.createElement('option');
+                option.value = model;
+                option.textContent = model;
+                this.modelSelect.appendChild(option);
+            });
+            // Restore selection if possible
+            if (models[provider].includes(currentModelValue)) {
+                this.modelSelect.value = currentModelValue;
+            }
+        } else {
+            // Add placeholder if no models
+            const option = document.createElement('option');
+            option.textContent = 'No models available';
+            option.disabled = true;
+            this.modelSelect.appendChild(option);
+        }
     }
 
     handleSubmit(event) {
         // 防止表单默认提交行为和事件冒泡
         event.preventDefault();
         event.stopPropagation();
-        
-        console.log('APIPanel: 提交处理开始 -', 
-                   'ID:', Math.random().toString(36).substr(2, 9), 
-                   '时间:', new Date().toISOString());
-        
-        // 使用静态标记防止重复提交
+
+        console.log('APIPanel: Submit button clicked.');
+
+        // 使用静态标记防止重复提交 (Keep this logic)
         if (APIPanel.isSubmitting) {
-            console.log('APIPanel: 提交操作正在处理中，忽略重复点击');
+            console.log('APIPanel: Submission in progress, ignoring duplicate click.');
             return;
         }
-        
+
+        // Check elements exist before proceeding
+        if (!this.providerSelect || !this.modelSelect || !this.apiKeyInput || !this.submitButton) {
+             console.error("APIPanel: Cannot handle submit, critical elements missing.");
+             alert(window.i18n?.get('internalError') ?? '内部错误，无法提交。');
+             return;
+        }
+
+
         // 设置标记，防止短时间内重复提交
         APIPanel.isSubmitting = true;
-        setTimeout(() => { APIPanel.isSubmitting = false; }, 1000);
+        this.submitButton.disabled = true; // Disable button
+        // Use setTimeout for debounce, not for resetting the flag immediately after fetch starts
+        const resetButton = () => {
+             APIPanel.isSubmitting = false;
+             if (this.submitButton) { // Check if button still exists
+                 this.submitButton.disabled = false;
+             }
+             console.log('APIPanel: Submit button re-enabled.');
+        };
+
 
         // 获取表单值
         const provider = this.providerSelect.value;
         const model = this.modelSelect.value;
-        const apiKey = this.apiKeyInput.value;
+        const apiKey = this.apiKeyInput.value.trim(); // Trim whitespace
 
         // 检查字段是否填写完整
         if (!provider || !model || !apiKey) {
-            const message = window.i18n && window.i18n.get ? 
-                window.i18n.get('fillAllFields') : '请填写所有字段！';
+            const message = window.i18n?.get('fillAllFields') ?? '请填写所有字段！';
             alert(message);
-            APIPanel.isSubmitting = false;
+            resetButton(); // Re-enable button on validation failure
             return;
         }
 
@@ -136,88 +165,45 @@ class APIPanel {
             apiKey: apiKey
         };
 
+        console.log('APIPanel: Sending config data (key hidden):', { provider, model, apiKey: '***' });
+
         // 发送HTTP请求
         fetch('/api/save-config', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(requestData)
         })
-            .then(response => {
-                APIPanel.isSubmitting = false;
-                if (response.ok) {
-                    const message = window.i18n && window.i18n.get ? 
-                        window.i18n.get('configSubmitted') : '配置已提交到服务器！';
-                    alert(message);
-                } else {
-                    const message = window.i18n && window.i18n.get ? 
-                        window.i18n.get('submitFailed') : '提交失败，请检查服务器状态。';
-                    alert(message);
-                }
-            })
-            .catch(error => {
-                APIPanel.isSubmitting = false;
-                console.error('APIPanel: HTTP请求失败:', error);
-                const message = window.i18n && window.i18n.get ? 
-                    window.i18n.get('networkError') : '提交失败，请检查网络连接。';
+        .then(response => {
+            if (response.ok) {
+                const message = window.i18n?.get('configSubmitted') ?? '配置已提交到服务器！';
                 alert(message);
-            });
+            } else {
+                 // Try to get more specific error
+                 response.text().then(text => {
+                     console.error('APIPanel: Submit failed.', response.status, text);
+                     const message = (window.i18n?.get('submitFailed') ?? '提交失败，请检查服务器状态。') + ` (Status: ${response.status})`;
+                     alert(message);
+                 }).catch(() => {
+                      console.error('APIPanel: Submit failed.', response.status);
+                      const message = (window.i18n?.get('submitFailed') ?? '提交失败，请检查服务器状态。') + ` (Status: ${response.status})`;
+                      alert(message);
+                 });
+            }
+        })
+        .catch(error => {
+            console.error('APIPanel: HTTP request failed:', error);
+            const message = window.i18n?.get('networkError') ?? '提交失败，请检查网络连接。';
+            alert(message);
+        })
+        .finally(() => {
+            // Always re-enable the button after fetch completes (success or error)
+            resetButton();
+        });
     }
 }
 
-// 防重复提交的静态标记
+// 防重复提交的静态标记 (Keep this)
 APIPanel.isSubmitting = false;
 
-// 所有全局代码放在一个条件中，确保只执行一次
-if (!window.apiPanelJsInitialized) {
-    // 单例获取函数
-    window.getAPIPanel = function() {
-        if (!window.apiPanelInstance) {
-            window.apiPanelInstance = new APIPanel();
-        }
-        return window.apiPanelInstance;
-    };
-    
-    // 初始化函数 - 只执行一次
-    window.initializeAPIPanel = function() {
-        if (window.apiPanelInitialized) {
-            console.log('APIPanel: 已初始化，跳过重复初始化');
-            return window.apiPanelInstance;
-        }
-        
-        const instance = window.getAPIPanel();
-        instance.init();
-        
-        // 标记为已初始化
-        window.apiPanelInitialized = true;
-        
-        return instance;
-    };
-    
-    // 处理标签切换事件 - 修改为不再获取新实例
-    if (window.apiPanelTabHandler) {
-        document.removeEventListener('click', window.apiPanelTabHandler);
-    }
-    
-    window.apiPanelTabHandler = function(event) {
-        // 只处理API面板tab按钮的点击
-        if (event.target.classList.contains('tab-btn') && 
-            event.target.getAttribute('data-target') === 'api-panel') {
-            
-            console.log('APIPanel: Tab切换到API面板');
-            
-            // 关键修改：只在已经初始化的情况下更新模型选项
-            if (window.apiPanelInstance) {
-                window.apiPanelInstance.updateModelOptions();
-                console.log('APIPanel: 使用现有实例更新模型选项');
-            }
-            // 不再调用getAPIPanel()，避免触发潜在的重复初始化
-        }
-    };
-    
-    // 添加标签切换事件处理
-    document.addEventListener('click', window.apiPanelTabHandler);
-    
-    // 设置已初始化标记
-    window.apiPanelJsInitialized = true;
-    console.log('APIPanel: 脚本全局初始化完成');
-}
+// Make class available globally
+window.APIPanel = APIPanel;
