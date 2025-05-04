@@ -1,14 +1,12 @@
 // right-section.js
 class RightSection {
     constructor() {
-        this.currentTab = 'status-panel'; // 修改为默认激活的标签
+        this.currentTab = 'status-panel'; // 默认激活的标签
         
-        // 延迟创建 APIPanel，避免与 api-panel.js 中的初始化冲突
+        // 确保APIPanel只被初始化一次
         setTimeout(() => {
-            // 复用已存在的实例，不重新创建
-            this.apiPanel = window.apiPanelInstance || new APIPanel();
-            if (!window.apiPanelInstance) {
-                window.apiPanelInstance = this.apiPanel;
+            if (typeof window.initializeAPIPanel === 'function') {
+                this.apiPanel = window.initializeAPIPanel();
             }
             this.settingsPanel = new SettingsPanel();
         }, 100);

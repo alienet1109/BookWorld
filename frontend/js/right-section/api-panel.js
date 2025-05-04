@@ -7,7 +7,7 @@ class APIPanel {
         this.submitButton = document.querySelector('.api-submit-btn');
 
         // 绑定方法到当前实例，确保函数引用一致
-        this.handleSubmit = this.handleSubmit.bind(this); // 确保 remove/add 监听器一致
+        this.handleSubmit = this.handleSubmit.bind(this);
         this.updateModelOptions = this.updateModelOptions.bind(this);
 
         // 设置初始事件监听器
@@ -15,6 +15,8 @@ class APIPanel {
         
         // 初始化模型选项
         this.updateModelOptions();
+        
+        console.log('APIPanel 实例已创建');
     }
 
     setupEventListeners() {
@@ -22,6 +24,7 @@ class APIPanel {
             // 确保移除已有监听器，防止重复绑定
             this.submitButton.removeEventListener('click', this.handleSubmit);
             this.submitButton.addEventListener('click', this.handleSubmit);
+            console.log('Submit 事件监听器已绑定');
         }
 
         if (this.providerSelect) {
@@ -47,6 +50,7 @@ class APIPanel {
     handleSubmit(event) {
         // 防止表单默认提交行为
         event.preventDefault();
+        console.log('提交事件触发');
 
         const provider = this.providerSelect.value;
         const model = this.modelSelect.value;
@@ -96,27 +100,20 @@ class APIPanel {
     }
 }
 
-// 初始化 API 面板 - 防止重复初始化
-let apiPanelInstance = null;
-document.addEventListener('DOMContentLoaded', () => {
-    // 检查是否已经由 right-section.js 创建了实例
+// 创建一个全局初始化函数，确保只有一个实例
+window.initializeAPIPanel = function() {
     if (!window.apiPanelInstance) {
-        apiPanelInstance = new APIPanel();
-        window.apiPanelInstance = apiPanelInstance; // 将实例存储到全局变量
-    } else {
-        apiPanelInstance = window.apiPanelInstance; // 使用全局实例
+        window.apiPanelInstance = new APIPanel();
     }
-});
+    return window.apiPanelInstance;
+};
 
 // 修复 tab 切换时的实例使用
 document.addEventListener('click', function(event) {
     if (event.target.classList.contains('tab-btn') && 
         event.target.getAttribute('data-target') === 'api-panel') {
-        // 使用正确的实例
-        const instance = window.apiPanelInstance || apiPanelInstance;
-        if (instance) {
-            // 仅更新模型选项，不重新绑定事件
-            instance.updateModelOptions();
+        if (window.apiPanelInstance) {
+            window.apiPanelInstance.updateModelOptions();
         }
     }
 });
