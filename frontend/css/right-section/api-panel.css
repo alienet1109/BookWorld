@@ -65,3 +65,13 @@ select {
     cursor: pointer;
     color: #5f3737;
 }
+
+/* 修复i18n后的布局问题 */
+.api-container label h3 {
+    margin: 0;
+    display: inline-block;
+}
+
+.api-submit-btn h3 {
+    margin: 0;
+}

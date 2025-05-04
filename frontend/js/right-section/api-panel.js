@@ -12,6 +12,9 @@ class APIPanel {
 
         // 设置初始事件监听器
         this.setupEventListeners();
+        
+        // 初始化模型选项
+        this.updateModelOptions();
     }
 
     setupEventListeners() {
@@ -51,7 +54,10 @@ class APIPanel {
 
         // 检查字段是否填写完整
         if (!provider || !model || !apiKey) {
-            alert('请填写所有字段！');
+            // 使用 i18n 获取国际化文本
+            const message = window.i18n && window.i18n.get ? 
+                window.i18n.get('fillAllFields') : '请填写所有字段！';
+            alert(message);
             return;
         }
 
@@ -69,19 +75,31 @@ class APIPanel {
         })
             .then(response => {
                 if (response.ok) {
-                    alert('配置已提交到服务器！');
+                    // 使用 i18n 获取国际化文本
+                    const message = window.i18n && window.i18n.get ? 
+                        window.i18n.get('configSubmitted') : '配置已提交到服务器！';
+                    alert(message);
                 } else {
-                    alert('提交失败，请检查服务器状态。');
+                    // 使用 i18n 获取国际化文本
+                    const message = window.i18n && window.i18n.get ? 
+                        window.i18n.get('submitFailed') : '提交失败，请检查服务器状态。';
+                    alert(message);
                 }
             })
             .catch(error => {
                 console.error('HTTP 请求失败:', error);
-                alert('提交失败，请检查网络连接。');
+                // 使用 i18n 获取国际化文本
+                const message = window.i18n && window.i18n.get ? 
+                    window.i18n.get('networkError') : '提交失败，请检查网络连接。';
+                alert(message);
             });
     }
 }
 
-// 初始化 API 面板
+// 初始化 API 面板 - 使用单例模式防止重复创建
+let apiPanelInstance = null;
 document.addEventListener('DOMContentLoaded', () => {
-    new APIPanel();
+    if (!apiPanelInstance) {
+        apiPanelInstance = new APIPanel();
+    }
 });

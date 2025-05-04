@@ -18,7 +18,12 @@ const translations = {
         apiProvider: "API Provider:",
         model: "Model:",
         saveSettings: "Save Settings",
-        submit: "Submit"
+        submit: "Submit",
+        // 新增翻译
+        fillAllFields: "Please fill in all fields!",
+        configSubmitted: "Configuration has been submitted to the server!",
+        submitFailed: "Submission failed. Please check server status.",
+        networkError: "Submission failed. Please check network connection."
     },
     zh: {
         start: "开始",
@@ -39,7 +44,12 @@ const translations = {
         apiProvider: "API提供商:",
         model: "模型:",
         saveSettings: "保存设置",
-        submit: "提交"
+        submit: "提交",
+        // 新增翻译
+        fillAllFields: "请填写所有字段！",
+        configSubmitted: "配置已提交到服务器！",
+        submitFailed: "提交失败，请检查服务器状态。",
+        networkError: "提交失败，请检查网络连接。"
     }
 };
 
@@ -90,10 +100,19 @@ class I18nManager {
             this.updateTexts();
         }
     }
+    
+    // 新增方法：获取特定翻译文本
+    get(key) {
+        if (translations[this.currentLang] && translations[this.currentLang][key]) {
+            return translations[this.currentLang][key];
+        }
+        // 回退到中文
+        return translations['zh'][key] || key;
+    }
 }
 
 // 初始化语言管理器
 document.addEventListener('DOMContentLoaded', () => {
     window.i18n = new I18nManager();
     window.i18n.loadLanguagePreference();
-}); 
+});
