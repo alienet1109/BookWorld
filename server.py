@@ -1,4 +1,4 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, FileResponse
 import uvicorn
@@ -235,6 +235,50 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
         print(f"WebSocket error: {e}")
     finally:
         manager.disconnect(client_id)
+
+@app.post("/api/save-config")
+async def save_config(request: Request):
+    global config
+    global manager
+    try:
+        config_data = await request.json()
+        # 检查必要字段是否存在
+        if 'provider' not in config_data or 'model' not in config_data or 'apiKey' not in config_data:
+            raise HTTPException(status_code=400, detail="缺少必要的字段")
+
+        llm_provider = config_data['provider']
+        model = config_data['model']
+        api_key = config_data['apiKey']
+        config['role_llm_name'] = model
+        config['world_llm_name'] = model
+        if 'openai' in llm_provider.lower():
+            os.environ['OPENAI_API_KEY'] = api_key
+        elif 'anthropic' in llm_provider.lower():
+            os.environ['ANTHROPIC_API_KEY'] = api_key
+        elif 'alibaba' in llm_provider.lower():
+            os.environ['DASHSCOPE_API_KEY'] = api_key
+        elif 'openrouter' in llm_provider.lower():
+            os.environ['OPENROUTER_API_KEY'] = api_key
+            
+        if "preset_path" in config and config["preset_path"] and os.path.exists(config["preset_path"]):
+            preset_path = config["preset_path"]
+        elif "genre" in config and config["genre"]:
+            genre = config["genre"]
+            preset_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),f"./config/experiment_{genre}.json")
+        else:
+            raise ValueError("Please set the preset_path in `config.json`.")
+        manager.bw = BookWorld(preset_path = preset_path,
+                world_llm_name = config["world_llm_name"],
+                role_llm_name = config["world_llm_name"])
+        manager.bw.set_generator(rounds = config["rounds"], 
+                    save_dir = config["save_dir"], 
+                    if_save = config["if_save"],
+                    mode = config["mode"],
+                    scene_mode = config["scene_mode"],)
+        return {"status": "success", "message": llm_provider + " 配置已保存"}
+    except Exception as e:
+        print(f"保存配置失败: {e}")
+        raise HTTPException(status_code=500, detail="保存配置失败")
 
 if __name__ == "__main__":
     uvicorn.run("server:app", host="0.0.0.0", port=8000, reload=True)
