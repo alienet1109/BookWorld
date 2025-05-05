@@ -23,7 +23,7 @@ const translations = {
         configSubmitted: "Configuration has been submitted to the server!",
         submitFailed: "Submission failed. Please check server status.",
         networkError: "Submission failed. Please check network connection.",
-        APIsettings: "API Key Config"
+        APIsettings: "API Setting"
     },
     zh: {
         start: "开始",
@@ -49,7 +49,7 @@ const translations = {
         configSubmitted: "配置已提交到服务器！",
         submitFailed: "提交失败，请检查服务器状态。",
         networkError: "提交失败，请检查网络连接。",
-        APIsettings: "API Key设置"
+        APIsettings: "API设置"
     }
 };
 
