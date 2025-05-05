@@ -19,31 +19,24 @@ class APIPanel {
             console.error("APIPanel: One or more required DOM elements not found during construction.");
         }
 
-        // 初始化标记 - Tracks if listeners have been set up
         this.initialized = false;
 
-        // 绑定方法到实例，确保函数引用一致
         this.handleSubmit = this.handleSubmit.bind(this);
         this.updateModelOptions = this.updateModelOptions.bind(this);
-
-        // 初始化模型选项 (Only if elements exist)
         if (this.providerSelect && this.modelSelect) {
             this.updateModelOptions();
         }
 
-        // 设置单例
         window.apiPanelInstance = this;
         console.log('APIPanel: New instance created.');
     }
 
     init() {
-        // 只初始化一次事件监听器
         if (this.initialized) {
             console.log('APIPanel: Listeners already initialized, skipping.');
             return;
         }
-
-        // Re-check elements before attaching listeners
+        
         if (!this.providerSelect || !this.modelSelect || !this.apiKeyInput || !this.submitButton) {
              console.error("APIPanel: Cannot init listeners, required DOM elements missing.");
              return;
@@ -51,14 +44,13 @@ class APIPanel {
 
         console.log('APIPanel: Initializing event listeners.');
         this.setupEventListeners();
-        this.initialized = true; // Mark as initialized *after* setup
+        this.initialized = true; 
         console.log('APIPanel: Event listeners initialized successfully.');
     }
 
     setupEventListeners() {
         // Submit Button Listener
         if (this.submitButton) {
-            // Remove any previous listener first (safer)
             this.submitButton.removeEventListener('click', this.handleSubmit);
             // Add the listener
             this.submitButton.addEventListener('click', this.handleSubmit);
@@ -67,9 +59,7 @@ class APIPanel {
 
         // Provider Select Listener
         if (this.providerSelect) {
-            // Remove any previous listener first (safer)
             this.providerSelect.removeEventListener('change', this.updateModelOptions);
-            // Add the listener
             this.providerSelect.addEventListener('change', this.updateModelOptions);
             console.log('APIPanel: Provider select listener attached.');
         }
@@ -117,9 +107,6 @@ class APIPanel {
         event.preventDefault();
         event.stopPropagation();
 
-        console.log('APIPanel: Submit button clicked.');
-
-        // 使用静态标记防止重复提交 (Keep this logic)
         if (APIPanel.isSubmitting) {
             console.log('APIPanel: Submission in progress, ignoring duplicate click.');
             return;
@@ -202,8 +189,5 @@ class APIPanel {
     }
 }
 
-// 防重复提交的静态标记 (Keep this)
 APIPanel.isSubmitting = false;
-
-// Make class available globally
 window.APIPanel = APIPanel;
