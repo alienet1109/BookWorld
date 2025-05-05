@@ -155,13 +155,8 @@
     <script src="./frontend/js/right-section/status-panel.js"></script>
     <script src="./frontend/js/right-section/scene-panel.js"></script>
     <script>
-        // 整合初始化逻辑，仅初始化一次
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOMContentLoaded: 开始统一初始化');
-
-            // 创建右侧面板实例 (Keep as is)
             if (window.RightSection) {
-                 // Ensure it's only created once if RightSection isn't a singleton itself
                  if (!window.rightSectionInstance) {
                     window.rightSectionInstance = new window.RightSection();
                     console.log('主界面右侧面板已初始化');
@@ -171,14 +166,9 @@
             }
 
 
-            // 延迟初始化API面板以确保所有依赖项已加载 (Keep setTimeout structure)
             setTimeout(() => {
-                console.log('延迟初始化API面板: 确保依赖已加载');
-
-                // --- MODIFIED PART ---
-                // Directly get/create the APIPanel instance and call init() if needed
                 if (window.APIPanel) {
-                    const apiPanelInstance = new window.APIPanel(); // Constructor handles singleton
+                    const apiPanelInstance = new window.APIPanel(); 
                     // Check if the instance exists and if its listeners haven't been initialized yet
                     if (apiPanelInstance && !apiPanelInstance.initialized) {
                         console.log('APIPanel: Calling init() to attach listeners.');
@@ -191,9 +181,8 @@
                 } else {
                     console.error('APIPanel class not found within setTimeout!');
                 }
-                // --- END MODIFIED PART ---
 
-            }, 500); // Keep original delay
+            }, 500); 
         });
     </script>
 </body>
