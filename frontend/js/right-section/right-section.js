@@ -1,9 +1,14 @@
 // right-section.js
 class RightSection {
     constructor() {
-        this.currentTab = 'api-panel';
-        this.apiPanel = new APIPanel();
-        this.settingsPanel = new SettingsPanel();
+        this.currentTab = 'status-panel'; // 默认激活的标签
+        
+        // 初始化SettingsPanel，但不处理APIPanel
+        setTimeout(() => {
+            this.settingsPanel = new SettingsPanel();
+            console.log('RightSection: SettingsPanel初始化完成');
+        }, 200);
+        
         this.init();
     }
 
@@ -37,11 +42,19 @@ class RightSection {
                 document.getElementById(targetPanelId).classList.add('active');
                 
                 this.currentTab = targetPanelId;
+                
+                // 让专门的tab事件处理器去处理API面板初始化
+                // 不在这里做任何API面板相关的操作
             });
         });
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const rightSection = new RightSection();
-});
+// 移除这个DOMContentLoaded事件监听器，避免重复初始化
+// 改为导出类供index.html使用
+window.RightSection = RightSection;
+
+// 删除以下代码，避免重复初始化
+// document.addEventListener('DOMContentLoaded', () => {
+//     const rightSection = new RightSection();
+// });

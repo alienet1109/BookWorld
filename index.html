@@ -74,8 +74,8 @@
             <div class="right-toolbar">
                 <button class="tab-btn active" data-target="status-panel" data-i18n="status">状态</button>
                 <button class="tab-btn" data-target="settings-panel" data-i18n="settings">设定</button>
-                <button class="tab-btn" data-target="scenes-panel" data-i18n="scenes"">场景</button>
-
+                <button class="tab-btn" data-target="scenes-panel" data-i18n="scenes">场景</button>
+                <button class="tab-btn" data-target="api-panel" data-i18n="APIsettings">API设置</button>
             </div>
             <div class="right-content">
                 <div class="tab-panel active" id="status-panel">
@@ -113,26 +113,77 @@
                     <div class="scenes-container">
                         <div class="scenes-header">
                             <h3 data-i18n="scenesList">场景列表</h3>
-                            <!-- <button class="clear-selection-btn">显示全部</button> -->
                         </div>
                         <div class="scene-buttons">
                             <!-- 场景按钮将通过JS动态添加 -->
                         </div>
                     </div>
                 </div>
+                <div class="tab-panel" id="api-panel">
+                    <div class="api-container">
+                        <label for="api-provider"><h3 data-i18n="apiProvider">API 提供商:</h3></label>
+                        <select id="api-provider" class="api-model-select">
+                            <option value="openai">OpenAI</option>
+                            <option value="anthropic">Anthropic</option>
+                            <option value="alibaba">Alibaba</option>
+                            <option value="openrouter">OpenRouter</option>
+                        </select>
+
+                        <label for="api-model"><h3 data-i18n="model">模型:</h3></label>
+                        <select id="api-model" class="api-model-select">
+                            <!-- 默认加载 OpenAI 模型 -->
+                            <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
+                            <option value="gpt-4">gpt-4</option>
+                        </select>
+
+                        <label for="api-key">API Key:</label>
+                        <input type="password" id="api-key" placeholder="Enter API Key">
+
+                        <button class="api-submit-btn">Submit</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <!-- <script src="./frontend/js/main-script.js"></script> -->
     <script src="./frontend/js/i18n.js"></script>
     <script src="./frontend/js/message.js"></script>
     <script src="./frontend/js/left-section/map-panel.js"></script>
     <script src="./frontend/js/left-section/profile-panel.js"></script>
-    
     <script src="./frontend/js/right-section/api-panel.js"></script>
     <script src="./frontend/js/right-section/right-section.js"></script>
     <script src="./frontend/js/right-section/settings-panel.js"></script>
     <script src="./frontend/js/right-section/status-panel.js"></script>
     <script src="./frontend/js/right-section/scene-panel.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.RightSection) {
+                 if (!window.rightSectionInstance) {
+                    window.rightSectionInstance = new window.RightSection();
+                    console.log('主界面右侧面板已初始化');
+                 }
+            } else {
+                 console.error("RightSection class not found during initialization.");
+            }
+
+
+            setTimeout(() => {
+                if (window.APIPanel) {
+                    const apiPanelInstance = new window.APIPanel(); 
+                    // Check if the instance exists and if its listeners haven't been initialized yet
+                    if (apiPanelInstance && !apiPanelInstance.initialized) {
+                        console.log('APIPanel: Calling init() to attach listeners.');
+                        apiPanelInstance.init();
+                    } else if (apiPanelInstance && apiPanelInstance.initialized) {
+                         console.log('APIPanel: Instance found, listeners already initialized.');
+                    } else if (!apiPanelInstance) {
+                         console.error('APIPanel: Failed to get instance within setTimeout.');
+                    }
+                } else {
+                    console.error('APIPanel class not found within setTimeout!');
+                }
+
+            }, 500); 
+        });
+    </script>
 </body>
 </html>

@@ -65,3 +65,30 @@ select {
     cursor: pointer;
     color: #5f3737;
 }
+
+/* 修复i18n后的布局问题 */
+.api-container label h3 {
+    margin: 0;
+    display: inline-block;
+}
+
+.api-submit-btn h3 {
+    margin: 0;
+}
+
+/* 修复 API Provider 标签与下拉框之间的间距 */
+.api-container label {
+    margin-bottom: 0;
+}
+
+/* 确保内联元素的垂直对齐 */
+.api-container label h3 {
+    vertical-align: middle;
+    line-height: normal;
+}
+
+/* 缩小标签和输入框之间的间距 */
+.api-container > label + select,
+.api-container > label + input {
+    margin-top: 5px;
+}
