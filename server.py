@@ -205,29 +205,6 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
                     }
                 })
                 
-            elif message['type'] == 'api_settings':
-                # 处理API设置
-                settings = message['data']
-                # 设置环境变量
-                os.environ[settings['envKey']] = settings['apiKey']
-                
-                # 更新BookWorld的设置
-                manager.bw.update_api_settings(
-                    provider=settings['provider'],
-                    model=settings['model']
-                )
-                
-                # 发送确认消息
-                await websocket.send_json({
-                    'type': 'message',
-                    'data': {
-                        'username': 'System',
-                        'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                        'text': f'已更新 {settings["provider"]} API设置',
-                        'icon': default_icon_path,
-                        'type': 'system'
-                    }
-                })
     except Exception as e:
         print(f"WebSocket error: {e}")
     finally:
@@ -257,22 +234,9 @@ async def save_config(request: Request):
         elif 'openrouter' in llm_provider.lower():
             os.environ['OPENROUTER_API_KEY'] = api_key
             
-        if "preset_path" in config and config["preset_path"] and os.path.exists(config["preset_path"]):
-            preset_path = config["preset_path"]
-        elif "genre" in config and config["genre"]:
-            genre = config["genre"]
-            preset_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),f"./config/experiment_{genre}.json")
-        else:
-            raise ValueError("Please set the preset_path in `config.json`.")
-        manager.bw = BookWorld(preset_path = preset_path,
-                world_llm_name = config["world_llm_name"],
-                role_llm_name = config["world_llm_name"])
-        manager.bw.set_generator(rounds = config["rounds"], 
-                    save_dir = config["save_dir"], 
-                    if_save = config["if_save"],
-                    mode = config["mode"],
-                    scene_mode = config["scene_mode"],)
+        manager.bw.server.reset_llm(model,model)
         return {"status": "success", "message": llm_provider + " 配置已保存"}
+    
     except Exception as e:
         print(f"保存配置失败: {e}")
         raise HTTPException(status_code=500, detail="保存配置失败")

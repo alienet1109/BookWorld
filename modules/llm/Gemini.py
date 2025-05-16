@@ -1,14 +1,12 @@
 from .BaseLLM import BaseLLM
-import google.generativeai as genai
+from google import genai
 import os
 import time
 
 class Gemini(BaseLLM):
-    def __init__(self, model="gemini-1.5-flash"):
+    def __init__(self, model="gemini-2.0-flash"):
         super(Gemini, self).__init__()
-        genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
         self.model_name = model
-        self.model = genai.GenerativeModel(model)
         self.messages = []
 
 
@@ -16,29 +14,26 @@ class Gemini(BaseLLM):
         self.messages = []
 
     def ai_message(self, payload):
-        self.messages.append({"role": "model", "parts": payload})
+        self.messages.append(payload)
 
     def system_message(self, payload):
-        self.messages.append({"role": "system", "parts": payload})
+        self.messages.append(payload)
 
     def user_message(self, payload):
-        self.messages.append({"role": "user", "parts": payload})
+        self.messages.append(payload)
 
     def get_response(self,temperature = 0.8):
-        time.sleep(3)
-        chat = self.model.start_chat(
-            history = self.messages
+        response = genai.Client(api_key=os.getenv("GEMINI_API_KEY")).models.generate_content(
+        model=self.model_name, contents="".join(self.messages), temperature = temperature
         )
-        response = chat.send_message(generation_config=genai.GenerationConfig(
-        temperature=temperature,
-        ))
-        
         return response.text
     
     def chat(self,text):
-        chat = self.model.start_chat()
-        response = chat.send_message(text)
-        return response.text
+        self.initialize_message()
+        self.user_message(text)
+        response = self.get_response()
+        
+        return response
     
     def print_prompt(self):
         for message in self.messages:

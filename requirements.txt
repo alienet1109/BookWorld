@@ -13,5 +13,5 @@ transformers
 uvicorn
 pillow
 faiss-cpu
-google-generativeai
+google-genai
 huggingface_hub[cli]

@@ -153,7 +153,7 @@ class WorldAgent:
         
         return response["if_end"],response["detail"]
         
-    def decide_screen_actors(self,roles_info_text, history_text, event, previous_role_codes):
+    def decide_scene_actors(self,roles_info_text, history_text, event, previous_role_codes):
         prompt = self._SELECT_SCREEN_ACTORS_PROMPT.format(**{
             "roles_info":roles_info_text,
             "history_text":history_text,

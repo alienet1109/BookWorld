@@ -9,21 +9,23 @@ import random
 import base64
 
 MODEL_NAME_DICT = {
-    "gpt3":"openai/gpt-3.5-turbo",
+    "gpt-3.5":"openai/gpt-3.5-turbo",
     "gpt-4":"openai/gpt-4",
     "gpt-4o":"openai/gpt-4o",
     "gpt-4o-mini":"openai/gpt-4o-mini",
     "gpt-3.5-turbo":"openai/gpt-3.5-turbo",
     "deepseek-r1":"deepseek/deepseek-r1",
     "deepseek-v3":"deepseek/deepseek-chat",
-    "gemini-2":"google/gemini-2.0-flash-001",
-    "gemini-1.5":"google/gemini-flash-1.5",
+    "gemini-2.0-flash":"google/gemini-2.0-flash-001",
+    "gemini-1.5-flash":"google/gemini-flash-1.5",
     "llama3-70b": "meta-llama/llama-3.3-70b-instruct",
     "qwen-turbo":"qwen/qwen-turbo",
     "qwen-plus":"qwen/qwen-plus",
     "qwen-max":"qwen/qwen-max",
     "qwen-2.5-72b":"qwen/qwen-2.5-72b-instruct",
+    "claude-3.5-haiku": "anthropic/claude-3.5-haiku",
     "claude-3.5-sonnet":"anthropic/claude-3.5-sonnet",
+    "claude-3.7-sonnet":"anthropic/claude-3.7-sonnet",
     "phi-4":"microsoft/phi-4",
 }
 
@@ -31,38 +33,47 @@ def get_models(model_name):
     if os.getenv("OPENROUTER_API_KEY", default="") and model_name in MODEL_NAME_DICT:
         from modules.llm.OpenRouter import OpenRouter
         return OpenRouter(model=MODEL_NAME_DICT[model_name])
-    elif model_name.startswith('gpt-3.5'):
+    elif model_name.startswith('gpt'):
         from modules.llm.LangChainGPT import LangChainGPT
-        return LangChainGPT(model="gpt-3.5-turbo")
-    elif model_name == 'gpt-4':
-        from modules.llm.LangChainGPT import LangChainGPT
-        return LangChainGPT(model="gpt-4")
-    elif model_name == 'gpt-4-turbo':
-        from modules.llm.LangChainGPT import LangChainGPT
-        return LangChainGPT(model="gpt-4")
-    elif model_name == 'gpt-4o':
-        from modules.llm.LangChainGPT import LangChainGPT
-        return LangChainGPT(model="gpt-4o")
-    elif model_name == "gpt-4o-mini":
-        from modules.llm.LangChainGPT import LangChainGPT
-        return LangChainGPT(model="gpt-4o-mini")
+        if model_name.startswith('gpt-3.5'):
+            return LangChainGPT(model="gpt-3.5-turbo")
+        elif model_name == 'gpt-4' or model_name == 'gpt-4-turbo':
+            return LangChainGPT(model="gpt-4")
+        elif model_name == 'gpt-4o':
+            return LangChainGPT(model="gpt-4o")
+        elif model_name == "gpt-4o-mini":
+            return LangChainGPT(model="gpt-4o-mini")
     elif model_name.startswith("claude"):
-        from modules.llm.LangChainGPT import LangChainGPT
-        return LangChainGPT(model="claude-3-5-sonnet-20241022")
+        from modules.llm.Claude import Claude
+        if model_name.startswith("claude-3.5-sonnet"):
+            return Claude(model="claude-3-5-sonnet-latest")
+        elif model_name.startswith("claude-3.7-sonnet"):
+            return Claude(model="claude-3-7-sonnet-latest")
+        elif model_name.startswith("claude-3.5-haiku"):
+            return Claude(model="claude-3-5-haiku-latest")
+        return Claude()
     elif model_name.startswith('qwen'):
         from modules.llm.Qwen import Qwen
         return Qwen(model = model_name)
     elif model_name.startswith('deepseek'):
         from modules.llm.DeepSeek import DeepSeek
-        return DeepSeek()
+        return DeepSeek(model = model_name)
     elif model_name.startswith('doubao'):
         from modules.llm.Doubao import Doubao
         return Doubao()
     elif model_name.startswith('gemini'):
         from modules.llm.Gemini import Gemini
+        if model_name.startswith('gemini-2.0'):
+            return Gemini(model="gemini-2.0-flash")
+        elif model_name.startswith('gemini-1.5'):
+            return Gemini(model="gemini-1.5-flash")
+        elif model_name.startswith('gemini-2.5-flash'):
+            return Gemini(model="gemini-2.5-flash-preview-04-17")
+        elif model_name.startswith('gemini-2.5-pro'):
+            return Gemini(model="gemini-2.5-pro-preview-05-06")
         return Gemini()
     else:
-        print(f'Warning! undefined model {model_name}, use gpt-3.5-turbo instead.')
+        print(f'Warning! undefined model {model_name}, use gpt-4o-mini instead.')
         from modules.llm.LangChainGPT import LangChainGPT
         return LangChainGPT()
     

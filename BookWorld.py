@@ -135,6 +135,19 @@ class Server():
                 if self.language == "zh" else f"{self.role_agents[role_code].nickname} is now located at {self.world_agent.find_location_name(init_locations_code[i])}"
             self.log(info_text)
     
+    def reset_llm(self, role_llm_name, world_llm_name):
+        self.role_llm = get_models(role_llm_name)
+        for role_code in self.role_codes:
+            self.role_agents[role_code].llm = self.role_llm
+            self.role_agents[role_code].llm_name = role_llm_name
+        if world_llm_name == role_llm_name:
+            self.world_llm = self.role_llm
+        else:
+            self.world_llm = get_models(world_llm_name)
+        self.world_agent.llm = self.world_llm
+        self.role_llm_name = role_llm_name
+        self.world_llm_name = world_llm_name
+        
     # Simulation        
     def simulate_generator(self, 
                  rounds: int = 10, 
@@ -218,12 +231,11 @@ class Server():
             # Characters in next scene
             if scene_mode:
                 group = self._name2code(
-                    self.world_agent.decide_screen_actors(
+                    self.world_agent.decide_scene_actors(
                         self._get_locations_info(False),
                         self.history_manager.get_recent_history(5),
                         self.event,
                         list(set(selected_role_codes + list(self.moving_roles_info.keys())))))
-                
                 selected_role_codes += group
                 if len(selected_role_codes) > len(self.role_codes):
                     selected_role_codes = []
@@ -232,7 +244,6 @@ class Server():
             self.current_status['group'] = group
             self.current_status['location_code'] = self.role_agents[group[0]].location_code
             self.scene_characters[str(current_round)] = group
-            
             # Prologue 
             # if current_round == 0 and len(group) > 0 
             #     prologue = self.world_agent.generate_location_prologue(location_code=self.role_agents[group[0]].location_code, history_text=self._get_history_text(group),event=self.event,location_info_text=self._find_roles_at_location(self.role_agents[group[0]].location_code,name=True))
@@ -601,7 +612,7 @@ class Server():
             Dict[str, Any]: Instruction for each role.
         """
         roles_info_text = self._get_group_members_info_text(self.role_codes,status=True)
-        history_text = "\n".join([self.role_agents[role_code].history_manager.get_recent_history(1)[0] for role_code in self.role_codes])
+        history_text = self.history_manager.get_recent_history(top_k)
     
         instruction = self.world_agent.get_script_instruction(
                                 roles_info_text=roles_info_text, 

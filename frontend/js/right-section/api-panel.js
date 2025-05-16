@@ -73,10 +73,10 @@ class APIPanel {
 
         const provider = this.providerSelect.value;
         const models = {
-            openai: ['gpt-3.5-turbo', 'gpt-4'],
-            anthropic: ['claude-3-opus', 'claude-3-sonnet'],
-            alibaba: ['qwen-turbo', 'qwen-max'],
-            openrouter: ['gpt-4o-mini']
+            openai: ['gpt-4o-mini', 'gpt-4o', 'gpt-4'],
+            anthropic: ['claude-3.5-sonnet', 'claude-3.7-sonnet', 'claude-3.5-haiku'],
+            alibaba: ['qwen-turbo', 'qwen-max','qwen-plus'],
+            openrouter: ['gpt-4o-mini','gpt-4o','gemini-2.0-flash','claude-3.5-sonnet','deepseek-r1']
         };
 
         const currentModelValue = this.modelSelect.value;

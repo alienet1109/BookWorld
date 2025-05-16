@@ -8,7 +8,7 @@ from .BaseLLM import BaseLLM
 
 class Claude(BaseLLM):
 
-    def __init__(self, model="claude-3-5-sonnet-20240620"):
+    def __init__(self, model="claude-3-5-sonnet-latest"):
         super(Claude, self).__init__()
         self.model_name = model
         self.client = anthropic.Anthropic(
