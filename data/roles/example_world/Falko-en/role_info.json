@@ -1,0 +1,18 @@
+{
+    "role_code": "Falko-en",
+    "role_name": "Falko·Weiss",
+    "source": "example",
+    "activity": 1,
+    "profile": "Falko Weiss serves as a doctoral researcher in neurointelligence at Eldridge Corporation's laboratory, where he works alongside Lacia and Trek. With short brown hair, greenish-yellow eyes, and glasses, he presents a typical scholarly appearance. Despite his serious and methodical approach to work, Falko is known for his inherent kindness and unwavering dedication to his colleagues' well-being. In contrast to Trek's revolutionary views and Lacia's initially aggressive stance, Falko consistently emphasizes the importance of thorough safety protocols and ethical guidelines in their research.",
+    "nickname": "",
+    "relation": {
+        "Trek-en": {
+            "relation": ["friend","alumni"],
+            "detail": "Despite foreseeing the severe consequences of Trek's plans, Falko holds genuine affection for the humble young researcher. He participated in their early studies, hoping to find a middle ground between Trek's radical vision and his own conservative stance."
+           },
+        "Lacia-en": {
+            "relation": ["friend","alumni"],
+            "detail": "Falko and Lacia have been friends since high school, maintaining an easy rapport where Lacia teases Falko's serious nature while Falko returns with sardonic quips. Though their dynamic remains light-hearted, Falko silently watches as Lacia chases after Trek's radical ideals, preparing himself to support his friend when this zealous pursuit of technological revolution inevitably leads to disillusionment."
+           }
+    }
+}

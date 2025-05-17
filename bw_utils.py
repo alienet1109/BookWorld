@@ -452,6 +452,7 @@ def clean_collection_name(name: str) -> str:
     valid_name = re.sub(r'\.\.+', '-', valid_name)
     valid_name = re.sub(r'^[^a-zA-Z0-9]+', '', valid_name)  # 移除开头非法字符
     valid_name = re.sub(r'[^a-zA-Z0-9]+$', '', valid_name)
+    valid_name = valid_name[:60]
     return valid_name
     
 cache_sign = True

@@ -64,6 +64,62 @@
     font-style: italic;
 }
 
+/* 设定模块样式 */
+.settings-content {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.setting-item {
+    background-color: #fdf5ee;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+.setting-term {
+    font-weight: bold;
+    color: #5f3737;
+    margin-bottom: 4px;
+}
+
+.setting-nature {
+    color: #666;
+    font-size: 0.9em;
+    margin-bottom: 4px;
+}
+
+.setting-detail {
+    color: #666;
+    line-height: 1.4;
+}
+
+.no-settings {
+    color: #666;
+    font-style: italic;
+    text-align: center;
+    padding: 10px;
+}
+
+/* 滚动条样式 */
+.settings-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.settings-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.settings-content::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.settings-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
 /* 状态指示器 */
 .status-indicator {
     width: 8px;

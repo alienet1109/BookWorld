@@ -5,7 +5,7 @@
     "loc_file_path":"./data/locations/A_Song_of_Ice_and_Fire.json",
     "role_file_dir":"./data/roles/",
     "role_agent_codes":["SansaStark-zh", "CerseiLannister-zh", "AryaStark-zh", "DaenerysTargaryen-zh", "JaimeLannister-zh", "TyrionLannister-zh", "JonSnow-zh", "BranStark-zh"],
-    "intervention":"",
+    "intervention":"血色婚礼刚刚结束————这是一场艾德慕·徒利（凯特琳·史塔克的弟弟）与罗莎琳·弗雷的婚礼，罗柏·史塔克为了修复与弗雷家族关系而策划的政治联姻，却在泰温兰尼斯特与老瓦德伯爵共同策划的阴谋下，演变成了一场彻头彻尾的悲剧。凯特琳、罗柏被杀，几乎所有的史塔克军人都被杀死，佛雷、波顿一方仅仅付出了大约五十人的伤亡代价。此事让兰尼斯特家族的实力大大增强，让史塔克家族与兰尼斯特家族之间的仇恨变得无可挽回。众人需要对这一事件做出反应。",
     "script":"",
     "source":"A_Song_of_Ice_and_Fire",
     "language":"zh"

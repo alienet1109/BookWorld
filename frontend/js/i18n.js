@@ -23,7 +23,9 @@ const translations = {
         configSubmitted: "Configuration has been submitted to the server!",
         submitFailed: "Submission failed. Please check server status.",
         networkError: "Submission failed. Please check network connection.",
-        APIsettings: "API Setting"
+        APIsettings: "API Setting",
+        preset: "Preset",
+        presetList: "Preset List",
     },
     zh: {
         start: "开始",
@@ -49,13 +51,15 @@ const translations = {
         configSubmitted: "配置已提交到服务器！",
         submitFailed: "提交失败，请检查服务器状态。",
         networkError: "提交失败，请检查网络连接。",
-        APIsettings: "API设置"
+        APIsettings: "API设置",
+        preset: "预设",
+        presetList: "预设列表",
     }
 };
 
 class I18nManager {
     constructor() {
-        this.currentLang = 'zh';
+        this.currentLang = 'en';
         this.init();
     }
 

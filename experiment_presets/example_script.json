@@ -5,6 +5,7 @@
     "loc_file_path":"./data/locations/example_locations.json",
     "role_file_dir":"./data/roles/",
     "role_agent_codes":["Lacia-en","Trek-en"],
+    "intervention":"",
     "script":"One day, an enigmatic signal from an unknown source reached Lacia and Trek. The pattern resembled Trek’s early consciousness digitization code—but far more evolved. Tracing its origin to lunar orbit, the two found themselves divided: Lacia urged caution, fearing the dangers of an unknown intelligence, while Trek saw it as proof that human evolution had already begun elsewhere. As they followed the signal, ideological tension grew—one seeking to contain it, the other longing to embrace it.",
     "source":"example_world",
     "language":"en"

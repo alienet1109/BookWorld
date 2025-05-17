@@ -9,6 +9,10 @@
         "Lacia-en": {
             "relation": ["intimate friend","alumni"],
             "detail": "Lacia and Trek first met during high school, where Lacia was two years ahead. Sharing the same ambition at the time, they quickly formed a strong bond. Lacia admired Trek’s talent and unwavering determination, providing him with significant support in his research endeavors. However, as events unfolded, Lacia began to realize that Trek’s views had become increasingly extreme. As Lacia's own stance shifted toward caution and moderation, a rift gradually formed between them, straining their once close partnership."
-           }
+           },
+        "Falko-en": {
+            "relation": ["friend","alumni"],
+            "detail": "To Trek, Falko is a dedicated and helpful senior colleague with whom he frequently engages in academic discussions. However, Trek notices that Falko, while always supportive professionally, maintains an emotional distance and seems to deliberately avoid forming any personal connection."
+            }
     }
 }

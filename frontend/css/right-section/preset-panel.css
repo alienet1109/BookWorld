@@ -1,0 +1,51 @@
+.preset-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+}
+
+.preset-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.preset-header h3 {
+    color: #5f3737;
+    margin: 0;
+}
+
+.preset-select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #5f3737;
+    border-radius: 4px;
+    background-color: white;
+    color: #5f3737;
+    margin-bottom: 10px;
+}
+
+.preset-select option {
+    padding: 8px;
+}
+
+.preset-submit-btn {
+    padding: 10px;
+    background-color: #5f3737;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+}
+
+.preset-submit-btn:hover {
+    background-color: #7a4747;
+}
+
+.preset-submit-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}

@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="./frontend/css/right-section/settings-panel.css">
     <link rel="stylesheet" href="./frontend/css/right-section/status-panel.css">
     <link rel="stylesheet" href="./frontend/css/right-section/scene-panel.css">
+    <link rel="stylesheet" href="./frontend/css/right-section/preset-panel.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
@@ -73,8 +74,8 @@
         <div class="right-section">
             <div class="right-toolbar">
                 <button class="tab-btn active" data-target="status-panel" data-i18n="status">状态</button>
-                <button class="tab-btn" data-target="settings-panel" data-i18n="settings">设定</button>
                 <button class="tab-btn" data-target="scenes-panel" data-i18n="scenes">场景</button>
+                <button class="tab-btn" data-target="preset-panel" data-i18n="preset">预设</button>
                 <button class="tab-btn" data-target="api-panel" data-i18n="APIsettings">API设置</button>
             </div>
             <div class="right-content">
@@ -102,11 +103,13 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="tab-panel" id="settings-panel">
-                    <div class="settings-container">
-                        <!-- 设定内容将通过JS动态添加 -->
+
+                        <div class="status-module" id="settings-module">
+                            <h3 data-i18n="settings">设定</h3>
+                            <div class="module-content settings-content">
+                                <!-- 设定内容将通过JS动态添加 -->
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="tab-panel" id="scenes-panel">
@@ -117,6 +120,17 @@
                         <div class="scene-buttons">
                             <!-- 场景按钮将通过JS动态添加 -->
                         </div>
+                    </div>
+                </div>
+                <div class="tab-panel" id="preset-panel">
+                    <div class="preset-container">
+                        <div class="preset-header">
+                            <h3 data-i18n="presetList">预设列表</h3>
+                        </div>
+                        <select class="preset-select">
+                            <!-- 预设选项将通过JS动态添加 -->
+                        </select>
+                        <button class="preset-submit-btn" disabled>Load</button>
                     </div>
                 </div>
                 <div class="tab-panel" id="api-panel">
@@ -154,6 +168,7 @@
     <script src="./frontend/js/right-section/settings-panel.js"></script>
     <script src="./frontend/js/right-section/status-panel.js"></script>
     <script src="./frontend/js/right-section/scene-panel.js"></script>
+    <script src="./frontend/js/right-section/preset-panel.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             if (window.RightSection) {

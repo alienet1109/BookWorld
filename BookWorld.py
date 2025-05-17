@@ -184,10 +184,12 @@ class Server():
             if self.mode == "free":
                 self.get_event()
                 self.log(f"--------- Free Mode: Current Event ---------\n{self.event}\n")
+                yield ("system","",f"--------- Current Event ---------\n{self.event}\n", None) 
                 self.event_history.append(self.event)
             elif self.mode == "script":
                 self.get_script()
                 self.log(f"--------- Script Mode: Setted Script ---------\n{self.script}\n")
+                yield ("system","",f"--------- Setted Script ---------\n{self.script}\n", None) 
                 self.event_history.append(self.event)
             if self.mode == "free":
                 for role_code in self.role_codes:
@@ -648,7 +650,6 @@ class Server():
             status = "\n".join([self.role_agents[role_code].status for role_code in self.role_codes])
             script = self.world_agent.generate_script(roles_info_text=roles_info_text,event=self.intervention,history_text=status)
             self.script = script
-        # self.event = self.script
         return self.script
     
     def update_event(self, group: List[str], top_k: int = 1):

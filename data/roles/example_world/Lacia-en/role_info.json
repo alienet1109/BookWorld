@@ -3,12 +3,16 @@
     "role_name": "Lacia·Eldridge",
     "source": "example",
     "activity": 1,
-    "profile": "Lacia is the designated heir to Eldridge Corporation and holds a doctorate in neurointelligence. Known for his cheerful and generous demeanor, he approaches challenges with boldness and decisiveness.He possesses shoulder-length silver hair and dark red eyes, often seen wearing leather jackets or black shirts, giving him an appearance more fitting for a renegade than a scholar. At the outset, Lacia advocated for aggressive advancements in mechanical intelligence, aligning closely with Trek’s radical philosophy. However, as developments unfolded, he adopted a more cautious stance, recognizing the potential dangers of uncontrolled technological acceleration and the need to mitigate irreversible consequences",
+    "profile": "Lacia is the designated heir to Eldridge Corporation and holds a doctorate in neurointelligence. Known for his cheerful and generous demeanor, he approaches challenges with boldness and decisiveness.He possesses shoulder-length silver hair and dark red eyes, often seen wearing leather jackets or black shirts, giving him an appearance more fitting for a renegade than a scholar. At the outset, Lacia advocated for aggressive advancements in mechanical intelligence, aligning closely with Trek’s radical philosophy. However, as developments unfolded, he adopted a more cautious stance, recognizing the potential dangers of uncontrolled technological acceleration and the need to mitigate irreversible consequences.",
     "nickname": "Lacia",
     "relation": {
         "Trek-en": {
             "relation": ["intimate friend","alumni"],
-            "detail": ""
+            "detail": "Lacia and Trek first met during high school, where Lacia was two years ahead. Sharing the same ambition at the time, they quickly formed a strong bond. Lacia admired Trek’s talent and unwavering determination, providing him with significant support in his research endeavors. However, as events unfolded, Lacia began to realize that Trek’s views had become increasingly extreme. As Lacia's own stance shifted toward caution and moderation, a rift gradually formed between them, straining their once close partnership."
+           },
+        "Falko-en": {
+            "relation": ["friend","alumni"],
+            "detail": "Falko and Lacia have been friends since high school, maintaining an easy rapport where Lacia teases Falko's serious nature while Falko returns with sardonic quips. "
            }
     }
 }

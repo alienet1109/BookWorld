@@ -20,6 +20,9 @@ for key in config:
 static_file_abspath = os.path.abspath(os.path.join(os.path.dirname(__file__), 'frontend'))
 app.mount("/frontend", StaticFiles(directory=static_file_abspath), name="frontend")
 
+# 预设文件目录
+PRESETS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'experiment_presets')
+
 class ConnectionManager:
     def __init__(self):
         self.active_connections: dict[str, WebSocket] = {}  
@@ -136,6 +139,61 @@ async def get_file(full_path: str):
             return FileResponse(default_icon_path)
     
     raise HTTPException(status_code=404, detail="File not found")
+
+@app.get("/api/list-presets")
+async def list_presets():
+    try:
+        # 获取所有json文件
+        presets = [f for f in os.listdir(PRESETS_DIR) if f.endswith('.json')]
+        return {"presets": presets}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/load-preset")
+async def load_preset(request: Request):
+    try:
+        data = await request.json()
+        preset_name = data.get('preset')
+        
+        if not preset_name:
+            raise HTTPException(status_code=400, detail="No preset specified")
+            
+        preset_path = os.path.join(PRESETS_DIR, preset_name)
+        print(f"Loading preset from: {preset_path}")
+        
+        if not os.path.exists(preset_path):
+            raise HTTPException(status_code=404, detail=f"Preset not found: {preset_path}")
+            
+        try:
+            # 更新BookWorld实例的预设
+            manager.bw = BookWorld(
+                preset_path=preset_path,
+                world_llm_name=config["world_llm_name"],
+                role_llm_name=config["role_llm_name"],
+                embedding_name=config["embedding_model_name"]
+            )
+            manager.bw.set_generator(
+                rounds=config["rounds"],
+                save_dir=config["save_dir"],
+                if_save=config["if_save"],
+                mode=config["mode"],
+                scene_mode=config["scene_mode"]
+            )
+            
+            # 获取初始数据
+            initial_data = await manager.get_initial_data()
+            
+            return {
+                "success": True,
+                "data": initial_data
+            }
+        except Exception as e:
+            print(f"Error initializing BookWorld: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Error initializing BookWorld: {str(e)}")
+            
+    except Exception as e:
+        print(f"Error in load_preset: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: str):
