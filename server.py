@@ -90,7 +90,7 @@ class ConnectionManager:
                         'data': status
                     })
                     # 添加延迟，控制消息发送频率
-                    await asyncio.sleep(1)  # 可以调整这个值
+                    await asyncio.sleep(0.2)  # 可以调整这个值
                 else:
                     break
         except asyncio.CancelledError:
