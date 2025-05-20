@@ -47,7 +47,7 @@ class Server():
         map_file_path: str = config["map_file_path"] if "map_file_path" in config else ""
         role_file_dir: str = config["role_file_dir"] if "role_file_dir" in config else "./data/roles/"
         loc_file_path: str = config["loc_file_path"]
-        self.intervention: str = "" if  "intervention" in config else ""
+        self.intervention: str = config["intervention"] if "intervention" in config else ""
         self.event = self.intervention
         self.script: str = config["script"] if "script" in config else ""
         self.language: str = config["language"] if "language" in config else "zh"
