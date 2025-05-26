@@ -1,0 +1,16 @@
+{
+  "book_path": "",
+  "language": "",
+  "book_source": "",
+  "target_character_names": [],
+  "target_location_names": [],
+
+  "llm_model_name": "claude-3.5-sonnet",
+  "OPENAI_API_KEY": "",
+  "GEMINI_API_KEY": "",
+  "ANTHROPIC_API_KEY": "",
+  "OPENROUTER_API_KEY": "",
+  "DASHSCOPE_API_KEY": "",
+  "DEEPSEEK_API_KEY": "",
+  "ARK_API_KEY": ""
+}

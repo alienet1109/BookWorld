@@ -31,20 +31,29 @@ git clone https://github.com/your-repo/bookworld.git
 cd bookworld
 ```
 
-### Step 2. Install dependencies
+### Step 2.Install dependencies
+Conda
 ```bash
+conda create -n bookworld python=3.10
+conda activate bookworld
 pip install -r requirements.txt
+```
+Docker
+```bash
+docker build -t bookworld .
 ```
 
 ### Step 3. Configure Simulation Settings
-- Update the configuration parameters in `config.json`:
+Fill in the configuration parameters in `config.json`:
   - `role_llm_name`: LLM model for character roles
   - `world_llm_name`: LLM model for world simulation
-  - `config_path`: The path to the experiment
+  - `preset_path`: The path to the experiment preset
   - `if_save`: Enable/disable saving (1/0)
   - `scene_mode`: Scene progression mode
   - `rounds`: Number of simulation rounds
   - `mode`: Simulation mode ("free" or "script")
+
+Then enter the API key of the LLM provider you're using either in `config.json` or through the frontend interface.
 
 ## Usage
 
@@ -55,6 +64,10 @@ python server.py
 or
 ```bash
 uvicorn server:app --host 127.0.0.1 --port 8000  
+```
+Docker
+```bash 
+docker run -p 8000:8000 bookworld
 ```
 
 ### Step 2. Access the web interface
@@ -67,14 +80,43 @@ Open a browser and navigate to http://localhost:8000.
 - Edit generated content if needed
 
 ### Step 4. Continue from previous simulation
-Locate the directory of the previous simulation within `/experiment_saves/`, and set its path to the `save_dir` field in `config.json`.
+1. Locate the directory of the previous simulation within `/experiment_saves/`
+2. Set its path to the `save_dir` field in `config.json`. Ensure that the selected directory directly contains `server_info.json` and `world_agent.json`.
 
 ## Customization
-### Construct Your Virtual World
-1. Create the roles, map, worldbuilding following the examples given in `/data/`. You can improve the simulation quality by providing background settings about the world in `world_details/` or put character dialogue lines in `role_lines.jsonl`. Additionally, you can place an image named `icon.(png/jpg)` inside the character's folder — this will be used as the avatar displayed in the interface.
+### Construct Your Virtual World Manually
+1. Create the roles, map, worldbuilding following the examples given in `/data/`. Additionally, you can place an image named `icon.(png/jpg)` inside the character's folder — this will be used as the avatar displayed in the interface.
+2. You can improve the simulation quality by providing background settings about the world in `world_details/` or put character dialogue lines in `role_lines.jsonl`. 
 3. Enter the preset path to `preset_path` in `config.json`.
 
+### Extract Role, Location, and Setting Data Automatically
+
+Utilize the script provided in `/extract_data/` to extract key story elements using LLMs.
+
+**1. Configure the extraction model and API key in `extract_config.json`:**
+
+* `book_path`: Path to the input book file. We currently support `.epub` (recommended), `.pdf`, and `.txt` formats.
+* `language`: The language of the book (e.g., `en`, `zh`). If not specified, the program will attempt to detect it automatically.
+* `book_source`: The title or name of the book. If omitted, the program will try to infer it from the file.
+* `target_character_names`: A list of characters to extract information about. It's best to use names or nicknames that appear most frequently in the text, rather than full formal names. If not provided, the program will attempt to extract them automatically. **For higher-quality results, we strongly recommend specifying this field.**
+* `target_location_names`: A list of important locations. Again, using the most frequently occurring name or common synonym improves accuracy. If omitted, locations will be extracted automatically. **For higher-quality results, we strongly recommend specifying this field.**
+
+**2. Run the script**
+
+  Characters and Locations
+
+  ```bash
+  python extract_data.py
+  ``` 
+
+  Settings
+
+  ```bash
+  python extract_settings.py
+  ```
+
 ### Convert SillyTavern Character Cards to Role Data
+
 1. Put your character cards in `/data/sillytavern_cards/`.
 2. Run the script. It will convert all the cards into the role data that BookWorld needs.
 ```bash

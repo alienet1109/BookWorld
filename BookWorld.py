@@ -820,7 +820,7 @@ class Server():
         """
         if not self.if_save:
             return
-        save_dir = f"./experiment_saves/{self.experiment_name}/{self.role_llm_name}/{self.start_time}"
+        save_dir = f"./experiment_saves/{self.experiment_name}/{self.role_llm_name}_{self.start_time}"
         create_dir(save_dir)
         location_setted, goal_setted = False,False
         if stage in ["location","goal","action"]:
