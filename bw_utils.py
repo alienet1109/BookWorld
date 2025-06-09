@@ -354,30 +354,43 @@ def check_role_code_availability(role_code,role_file_dir):
             return True
     return False
     
-def get_grandchild_folders(root_folder):
+def get_grandchild_folders(root_folder, if_full = True):
     folders = []
     for resource in os.listdir(root_folder):
         subpath = os.path.join(root_folder,resource)
         for folder_name in os.listdir(subpath):
             folder_path = os.path.join(subpath, folder_name)
-            folders.append(folder_path)
+            if if_full:
+                folders.append(folder_path)
+            else:
+                folders.append(folder_name)
     
     return folders
 
-def get_child_folders(root_folder):
+def get_child_folders(root_folder, if_full = True):
     folders = []
     for resource in os.listdir(root_folder):
-        path = os.path.join(root_folder,resource)
-        if os.path.isdir(path):
-            folders.append(path)
+        if if_full:
+            path = os.path.join(root_folder,resource)
+            if os.path.isdir(path):
+                folders.append(path)
+        else:
+            path = resource
+            if os.path.isdir(os.path.join(root_folder, path)):
+                folders.append(path)
     return folders
 
-def get_child_paths(root_folder):
+def get_child_paths(root_folder, if_full = True):
     paths = []
     for resource in os.listdir(root_folder):
-        path = os.path.join(root_folder,resource)
-        if os.path.isfile(path):
-            paths.append(path)
+        if if_full:
+            path = os.path.join(root_folder,resource)
+            if os.path.isfile(path):
+                paths.append(path)
+        else:
+            path = resource
+            if os.path.isfile(os.path.join(root_folder, path)):
+                paths.append(path)
     return paths
 
 def get_first_directory(path):

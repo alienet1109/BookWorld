@@ -1,0 +1,16 @@
+{
+  "experiment_subname": "1",
+  "world_file_path": "./data/worlds/test/general.json",
+  "map_file_path": "./data/maps/test.csv",
+  "loc_file_path": "./data/locations/test.json",
+  "role_file_dir": "./data/roles/",
+  "role_agent_codes": [
+    "A-en",
+    "B-en",
+    "Abc-en"
+  ],
+  "intervention": "",
+  "script": "",
+  "source": "test",
+  "language": "en"
+}

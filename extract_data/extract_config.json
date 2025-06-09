@@ -1,9 +1,10 @@
 {
   "book_path": "",
-  "language": "",
+  "language": "en",
   "book_source": "",
   "target_character_names": [],
   "target_location_names": [],
+  "if_auto_extract":0,
 
   "llm_model_name": "claude-3.5-sonnet",
   "OPENAI_API_KEY": "",

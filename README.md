@@ -93,6 +93,11 @@ Open a browser and navigate to http://localhost:8000.
 
 Utilize the script provided in `/extract_data/` to extract key story elements using LLMs.
 
+<font color="red">
+⚠️ Note: We are sorry that the extraction code is currently unstable and may not produce reliable results. We recommend manually entering the character profiles and descriptions, or using data from sources such as Wikipedia. You can quickly generate a template for location and character information by setting <code>if_auto_extract</code> to 0 in <code>extract_config.json</code>.
+</font>
+<br><br>
+
 **1. Configure the extraction model and API key in `extract_config.json`:**
 
 * `book_path`: Path to the input book file. We currently support `.epub` (recommended), `.pdf`, and `.txt` formats.

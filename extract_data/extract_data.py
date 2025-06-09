@@ -3,24 +3,12 @@ sys.path.append("../")
 from bw_utils import *
 from extract_utils import *
 import os
+import csv
 import json
 
 config = load_json_file("./extract_config.json")
 
 
-target_character_names = config["target_character_names"] if "target_character_names" in config else []
-target_location_names = config["target_location_names"] if "target_location_names" in config else []
-book_path = config["book_path"]
-book_name = os.path.basename(book_path).split(".")[0]
-language = config["language"] if config["language"] else lang_detect(book_name)
-book_source = config["book_source"] if config["book_source"] else book_name
-print(language,book_source)
-for key in config:
-    if "API_KEY" in key and config[key]:
-        os.environ[key] = config[key]
-
-llm = get_models(config["llm_model_name"])
-data = get_chapters(book_path) # chapters = [{"idx":"","title":"","content":""}]
 
 def get_default_character_info(role_name,language,other_role_names):
     default_character_info = {
@@ -120,15 +108,16 @@ def update_character_relation(char1, char2, new_relation):
             target_characters_info[char1]["relation"][char2_code]["detail"] = new_relation
 
 def update_location_info(location_name, new_description):
-    if location_name not in target_locations_info:
-        target_locations_info[location_name] = get_defaule_location_info(location_name, language)
+    location_code = convert_name_to_code(location_name,language)
+    if location_code not in target_locations_info:
+        target_locations_info[location_code] = get_defaule_location_info(location_name, language)
     
     if new_description:
-        current_description = target_locations_info[location_name]["description"]
+        current_description = target_locations_info[location_code]["description"]
         if current_description:
-            target_locations_info[location_name]["description"] = current_description + "\n" + new_description
+            target_locations_info[location_code]["description"] = current_description + "\n" + new_description
         else:
-            target_locations_info[location_name]["description"] = new_description
+            target_locations_info[location_code]["description"] = new_description
 
 
 
@@ -156,7 +145,41 @@ def save_location_info(locations_info):
     save_json_file(location_path, locations_info)
     return location_path
 
+def save_world_info(world_info):
+    world_dir = f"./data/worlds/{book_source}"
+    ensure_dir(world_dir)
+    
+    world_path = f"{world_dir}/general.json"
+    save_json_file(world_path, world_info)
+    return world_path
 
+def save_map(target_location_names,default_distance = 1):
+    location_codes = [convert_name_to_code(name,language) for name in target_location_names]
+    map_dir = f"./data/maps"
+    ensure_dir(map_dir)
+    
+    map_path = f"{map_dir}/{book_source}.csv"
+    
+    n = len(location_codes)
+    matrix = []
+
+    header = [""] + location_codes
+    matrix.append(header)
+
+    for i in range(n):
+        row = [location_codes[i]]
+        for j in range(n):
+            if i == j:
+                row.append(0)
+            else:
+                row.append(default_distance)
+        matrix.append(row)
+
+    with open(map_path, "w", newline='', encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerows(matrix)
+    
+    return map_path
 
 def save_json_file(path, data):
     """Save data as JSON file"""
@@ -261,62 +284,121 @@ def auto_extract_targets():
 
 
 if __name__ == "__main__":
+    
+    target_character_names = config["target_character_names"] if "target_character_names" in config else []
+    target_location_names = config["target_location_names"] if "target_location_names" in config else []
+    book_path = config["book_path"]
+    try:
+        book_name = os.path.basename(book_path).split(".")[0]
+    except Exception as e:
+        book_name = config["book_source"] if config["book_source"] else "new_book_1"
+    language = config["language"] if config["language"] else lang_detect(book_name)
+    book_source = config["book_source"] if config["book_source"] else book_name
+    print(language,book_source)
+    for key in config:
+        if "API_KEY" in key and config[key]:
+            os.environ[key] = config[key]
     target_characters_info = {}
     target_locations_info = {}
-    # default character and location info
-    if not target_character_names or not target_location_names:
-        print("No target characters or locations specified. Starting automatic extraction...")
-        target_character_names, target_location_names = auto_extract_targets()
-        
-        # Update config with extracted targets
-        config["target_character_names"] = target_character_names
-        config["target_location_names"] = target_location_names
-        save_json_file("./extract_config.json", config)
-        
-        print("Updated config file with extracted targets")
-        print(target_character_names,target_location_names)
     
-    # main
-    for chapter in data:
-        text = chapter['content']
-        if language == 'en':
-            chunks = split_text_by_max_words(text, max_words=2000)
-        else:
-            chunks = split_text_by_max_words(text, max_words=4000)
+    
+    if config["if_auto_extract"]:
+        llm = get_models(config["llm_model_name"])
+        data = get_chapters(book_path) # chapters = [{"idx":"","title":"","content":""}]
         
-        for chunk in chunks:
-            # Profile
-            for character in target_character_names:
-                if character in chunk:
-                    new_profile = process_character_chunk(chunk, character, language)
-                    update_character_info(character, new_profile)
-            # Relation
-            for i, char1 in enumerate(target_character_names):
-                for char2 in target_character_names[i+1:]:
-                    if char1 in chunk and char2 in chunk:
-                        char1_pos = chunk.find(char1)
-                        char2_pos = chunk.find(char2)
-                        if abs(char1_pos - char2_pos) <= 100:
-                            new_relation = process_character_relation(chunk, char1, char2, language)
-                            update_character_relation(char1, char2, new_relation)
-            # Location
-            for location in target_location_names:
-                if location in chunk:
-                    new_description = process_location_chunk(chunk, location, language)
-                    update_location_info(location, new_description)
-                    
-    # Replace the original save results section
-    print("Starting to save extracted data...")
+        if not target_character_names or not target_location_names:
+            print("No target characters or locations specified. Starting automatic extraction...")
+            target_character_names, target_location_names = auto_extract_targets()
+            
+            # Update config with extracted targets
+            config["target_character_names"] = target_character_names
+            config["target_location_names"] = target_location_names
+            save_json_file("./extract_config.json", config)
+            
+            print("Updated config file with extracted targets")
+            print(target_character_names,target_location_names)
+        
+        # main
+        for chapter in data:
+            text = chapter['content']
+            if language == 'en':
+                chunks = split_text_by_max_words(text, max_words=2000)
+            else:
+                chunks = split_text_by_max_words(text, max_words=4000)
+            
+            for chunk in chunks:
+                # Profile
+                for character in target_character_names:
+                    if character in chunk:
+                        new_profile = process_character_chunk(chunk, character, language)
+                        update_character_info(character, new_profile)
+                # Relation
+                for i, char1 in enumerate(target_character_names):
+                    for char2 in target_character_names[i+1:]:
+                        if char1 in chunk and char2 in chunk:
+                            char1_pos = chunk.find(char1)
+                            char2_pos = chunk.find(char2)
+                            if abs(char1_pos - char2_pos) <= 100:
+                                new_relation = process_character_relation(chunk, char1, char2, language)
+                                update_character_relation(char1, char2, new_relation)
+                # Location
+                for location in target_location_names:
+                    if location in chunk:
+                        new_description = process_location_chunk(chunk, location, language)
+                        update_location_info(location, new_description)
+                        
+        # Replace the original save results section
+        print("Starting to save extracted data...")
 
-    # Save role information
-    for role_info in target_characters_info.values():
-        role_path = save_role_info(role_info)
-        print(f"Role information saved: {role_path}")
+        # Save role information
+        for role_info in target_characters_info.values():
+            role_path = save_role_info(role_info)
+            print(f"Role information saved: {role_path}")
 
-    # Save location information
-    location_path = save_location_info(target_locations_info)
-    print(f"Location information saved: {location_path}")
+        # Save location information
+        location_path = save_location_info(target_locations_info)
+        print(f"Location information saved: {location_path}")
 
-    print(f"Data extraction completed!")
-    print(f"Role information saved to ./data/roles/{book_source}/")
-    print(f"Location information saved to {location_path}")
+        print(f"Data extraction completed!")
+        print(f"Role information saved to ./data/roles/{book_source}/")
+        print(f"Location information saved to {location_path}")
+    else:
+        for role_name in target_character_names:
+            target_characters_info[convert_name_to_code(role_name,language)] = get_default_character_info(role_name,language,[name for name in target_character_names if name != role_name])
+        for role_info in target_characters_info.values():
+            role_path = save_role_info(role_info)
+            print(f"Role information saved: {role_path}")
+
+        for loc_name in target_location_names:
+            target_locations_info[convert_name_to_code(loc_name,language)] = get_defaule_location_info(loc_name,language)
+        location_path = save_location_info(target_locations_info)
+        print(f"Location information saved: {location_path}")
+
+    world_path = save_world_info({
+    "source": book_source,
+    "world_name": "",
+    "description": "",
+    "language":language    
+    })
+    print(f"World information saved: {world_path}")
+    
+    map_path = save_map(target_location_names, 1)
+    print(f"Map saved: {map_path}")
+    
+    preset = {
+        "experiment_subname": "1",
+        "world_file_path":f"./data/worlds/{book_source}/general.json",
+        "map_file_path":f"./data/maps/{book_source}.csv",
+        "loc_file_path":f"./data/locations/{book_source}.json",
+        "role_file_dir":"./data/roles/",
+        "role_agent_codes":[convert_name_to_code(name,language) for name in target_character_names],
+        "intervention":"",
+        "script":"",
+        "source":book_source,
+        "language":language
+
+    }
+    ensure_dir("./experiment_presets/")
+    preset_path = f"./experiment_presets/{book_source}.json"
+    save_json_file(preset_path,preset)
+    print(f"Preset generated: {preset_path}")

@@ -24,14 +24,14 @@ class PresetPanel {
             this.renderPresetOptions();
         } catch (error) {
             console.error('Error loading presets:', error);
-            alert('加载预设列表失败，请刷新页面重试');
+            alert('Error loading presets, please try again.');
         }
     }
 
     renderPresetOptions() {
         if (!this.select) return;
 
-        this.select.innerHTML = '<option value="">选择预设...</option>';
+        this.select.innerHTML = '<option value="">Select a preset...</option>';
         this.presets.forEach(preset => {
             const option = document.createElement('option');
             option.value = preset;
@@ -58,7 +58,6 @@ class PresetPanel {
 
         // 禁用按钮，防止重复点击
         this.submitBtn.disabled = true;
-        this.submitBtn.textContent = '加载中...';
 
         try {
             const response = await fetch('/api/load-preset', {
@@ -74,7 +73,7 @@ class PresetPanel {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.detail || '加载预设失败');
+                throw new Error(data.detail || 'Failed to load preset');
             }
 
             if (data.success) {
@@ -96,7 +95,7 @@ class PresetPanel {
                     const ws = new WebSocket(`ws://${window.location.host}/ws/${clientId}`);
                     
                     ws.onopen = () => {
-                        console.log('WebSocket重新连接成功');
+                        console.log('WebSocket Reconnected:', clientId);
                     };
 
                     ws.onmessage = (event) => {
@@ -108,23 +107,22 @@ class PresetPanel {
                     };
 
                     ws.onerror = (error) => {
-                        console.error('WebSocket错误:', error);
-                        alert('连接服务器失败，请刷新页面重试');
+                        console.error('WebSocket Error:', error);
+                        alert('WebSocket connection error, please try again later.');
                     };
 
                     // 更新全局WebSocket实例
                     window.ws = ws;
                 }
 
-                alert('预设加载成功！');
+                alert('Preset loaded successfully!');
             }
         } catch (error) {
             console.error('Error loading preset:', error);
-            alert(error.message || '加载预设失败，请重试');
+            alert(error.message || 'Failed to load preset, please try again.');
         } finally {
             // 恢复按钮状态
             this.submitBtn.disabled = false;
-            this.submitBtn.textContent = '加载预设';
         }
     }
 }

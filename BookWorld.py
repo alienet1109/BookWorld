@@ -239,7 +239,7 @@ class Server():
                         self.event,
                         list(set(selected_role_codes + list(self.moving_roles_info.keys())))))
                 selected_role_codes += group
-                if len(selected_role_codes) > len(self.role_codes):
+                if len(selected_role_codes) >= len(self.role_codes):
                     selected_role_codes = []
             else:
                 group = self.role_codes
@@ -1065,7 +1065,7 @@ if __name__ == "__main__":
     scene_mode = args.scene_mode
     mode = args.mode
     if not preset_path:
-        preset_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),f"./config/experiment_{genre}.json")
+        preset_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),f"./experiment_presets/experiment_{genre}.json")
     
     bw = BookWorld(preset_path, world_llm_name=world_llm_name, role_llm_name=role_llm_name)
     bw.set_generator(rounds = rounds, save_dir = save_dir, if_save = if_save, scene_mode = scene_mode,mode = mode)

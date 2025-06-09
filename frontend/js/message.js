@@ -111,9 +111,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         else if (message.type === 'initial_data') {
-            // 处理初始数据
+            // 清空现有消息，处理初始数据
+            chatMessages.innerHTML = '';
+            
             if (message.data.history_messages) {
                 loadHistoryMessages(message.data.history_messages);
+            }
+            else {
+                loadHistoryMessages([]);
             }
         }
     };

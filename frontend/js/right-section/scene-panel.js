@@ -64,7 +64,7 @@ class ScenesPanel {
             if (this.currentScene === scene) {
                 button.classList.add('active');
             }
-            button.textContent = `场景 ${scene}`;
+            button.textContent = `Scene ${scene}`;
             
             button.addEventListener('click', () => {
                 this.selectScene(scene);

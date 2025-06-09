@@ -1,0 +1,18 @@
+{
+  "role_name": "abc",
+  "role_code": "Abc-en",
+  "source": "test",
+  "profile": "",
+  "activity": 1,
+  "nickname": "abc",
+  "relation": {
+    "A-en": {
+      "relation": [],
+      "detail": ""
+    },
+    "B-en": {
+      "relation": [],
+      "detail": ""
+    }
+  }
+}

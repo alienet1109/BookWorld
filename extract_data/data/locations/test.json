@@ -1,0 +1,14 @@
+{
+  "Loc1-en": {
+    "location_name": "loc1",
+    "location_code": "Loc1-en",
+    "description": "",
+    "detail": ""
+  },
+  "Loc2-en": {
+    "location_name": "loc2",
+    "location_code": "Loc2-en",
+    "description": "",
+    "detail": ""
+  }
+}
