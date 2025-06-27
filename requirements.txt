@@ -1,6 +1,6 @@
 anthropic
 beautifulsoup4
-chromadb
+chromadb==1.0.0
 fastapi
 langchain
 langchain_experimental
