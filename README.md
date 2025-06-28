@@ -11,7 +11,7 @@
 
 This is the official implementation of the paper "BOOKWORLD: From Novels to Interactive Agent Societies for Story Creation".
 
-![Preview.png](<https://media-hosting.imagekit.io/14ce589aed514385/Preview.png?Expires=1840513142&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=oH~h5cUOwe3DjyDa86z40LBKpVanA81kQcGWubqjAa7SdiRWbYq2GIIF27urVYi4JK6u20IcmbRmoIxqkIQ1D-IBc9aMKcyVLJrjtlsvbaePOzgi-GtivxWIFuJvSzzuOfYmWF89KxzQ~EFsximhKJqtuw-WCZYRhpEFMUSuy42z-Lhv4ou6mWM58PIwzvsdc~rJxtMEXdaoxA9BGKKfcWD8mrhN8TI~mQzeRP-WE6KxHS9ib3MKES1BN9n5jLa4vEI5I2OwnzBFnc2iJ2vcyYgYRUY~1JF-ucYubMt85H2aWo9PUBYy38BYzodDdI0X8sKesL~evjstY5RH0buyCw__>)
+<a href="https://ibb.co/TBTf350n"><img src="https://i.ibb.co/tMhGr52N/Preview.png" alt="Preview" border="0"></a>
 
 ## Introduction
 
