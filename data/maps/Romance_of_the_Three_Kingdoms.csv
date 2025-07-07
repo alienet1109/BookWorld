@@ -1,0 +1,11 @@
+,Luoyang,ChangAn,Xuchang,JianYe,ChengDu,WuChang,YeCheng,HulaoGuan,BaiMa,JiZhou
+Luoyang,0,3,3,3,3,3,3,3,3,3
+ChangAn,3,0,3,3,3,3,3,3,3,3
+Xuchang,3,3,0,3,3,3,3,3,3,3
+JianYe,3,3,3,0,3,3,3,3,3,3
+ChengDu,3,3,3,3,0,3,3,3,3,3
+WuChang,3,3,3,3,3,0,3,3,3,3
+YeCheng,3,3,3,3,3,3,0,3,3,3
+HulaoGuan,3,3,3,3,3,3,3,0,3,3
+BaiMa,3,3,3,3,3,3,3,3,0,3
+JiZhou,3,3,3,3,3,3,3,3,3,0

@@ -1,0 +1,26 @@
+{
+ "experiment_subname": "A_Dream_in_Red_Mansions",
+ "source": "A_Dream_in_Red_Mansions",
+ "title": "红楼梦",
+ "world_file_path": "./data/worlds/A_Dream_in_Red_Mansions/world_info.json",
+ "map_file_path": "./data/maps/A_Dream_in_Red_Mansions.csv",
+ "loc_file_path": "./data/locations/A_Dream_in_Red_Mansions.json",
+ "role_file_dir": "./data/roles/",
+ "role_agent_codes": [
+  "WangXifeng-zh",
+  "Miaoyu-zh",
+  "XueBaochai-zh",
+  "JiaZheng-zh",
+  "LinDaiyu-zh",
+  "JiaBaoyu-zh",
+  "JiaShe-zh",
+  "LiWan-zh",
+  "YouSanjie-zh",
+  "Qingwen-zh",
+  "liulaolao-zh",
+  "JiaMu-zh"
+ ],
+ "intervention": "",
+ "script": "",
+ "language": "zh"
+}

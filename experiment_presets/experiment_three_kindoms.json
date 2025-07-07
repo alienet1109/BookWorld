@@ -1,0 +1,13 @@
+{
+    "experiment_subname": "general",
+    "world_file_path":"./data/worlds/Romance_of_the_Three_Kingdoms/general.json",
+    "map_file_path":"./data/maps/Romance_of_the_Three_Kingdoms.csv",
+    "loc_file_path":"./data/locations/Romance_of_the_Three_Kingdoms.json",
+    "role_file_dir":"./data/roles/",
+    "role_agent_codes":["caocao-zh", "zhaoyun-zh", "simayi-zh", "liubei-zh", "zhouyu-zh", "sunquan-zh", "guanyu-zh",  "zhangfei-zh", "zhugeliang-zh"],
+    "intervention":"",
+    "script":"",
+    "source":"Romance_of_the_Three_Kingdoms",
+    "language":"zh"
+
+}

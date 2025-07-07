@@ -1,0 +1,26 @@
+{
+ "role_code": "xiahoujie-zh",
+ "role_name": "夏侯杰",
+ "nickname": "夏侯杰",
+ "source": "Romance_of_the_Three_Kingdoms",
+ "activity": 1,
+ "profile": "夏侯杰是《三国演义》中的一个小角色，主要出现在曹操军中。他以勇敢著称但性格较为冲动，容易受到挑衅。在书中并没有对他的外貌做过多描述。",
+ "gender": "男",
+ "identity": [
+  "将领"
+ ],
+ "relation": {
+  "caocao-zh": {
+   "relation": [
+    "主公"
+   ],
+   "detail": "夏侯杰效力于曹操麾下，是其军队中的一员勇将。他对曹操忠心耿耿，在战场上多次为曹操作战。"
+  },
+  "xiahouyuan-zh": {
+   "relation": [
+    "族兄"
+   ],
+   "detail": "夏侯杰与夏侯渊同属于夏侯氏家族成员之一，两人之间存在着深厚的兄弟情谊。虽然他们在故事中的互动不多，但他们都是魏国的重要将领。"
+  }
+ }
+}
