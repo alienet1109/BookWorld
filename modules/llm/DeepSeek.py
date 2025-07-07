@@ -30,10 +30,7 @@ class DeepSeek(BaseLLM):
     
         response = self.client.chat.completions.create(
         model="deepseek-chat",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant"},
-            {"role": "user", "content": "Hello"},
-        ],
+        messages=self.messages,
         stream=False
 )
         return response.choices[0].message.content
