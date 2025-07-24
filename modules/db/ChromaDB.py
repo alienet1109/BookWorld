@@ -25,7 +25,7 @@ class ChromaDB(BaseDB):
             self.collections[db_name] = self.client.create_collection(name=db_name,embedding_function=self.embedding)
             if len(data) != 0:
                 for i in  tqdm(list(range(self.collections[db_name].count()+1,len(data)))):
-                    self.collections[db_name].update(
+                    self.collections[db_name].add(
                         documents=[data[i]],
                         ids=[str(i)]
                     )
