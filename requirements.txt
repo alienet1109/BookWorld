@@ -1,6 +1,6 @@
 anthropic
 beautifulsoup4
-chromadb==1.0.0
+chromadb
 fastapi
 langchain
 langchain_experimental
@@ -13,5 +13,4 @@ transformers
 uvicorn
 pillow
 faiss-cpu
-google-genai
 huggingface_hub[cli]
