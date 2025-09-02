@@ -12,6 +12,14 @@
 This is the official implementation of the paper "BOOKWORLD: From Novels to Interactive Agent Societies for Story Creation".
 
 <a href="https://ibb.co/TBTf350n"><img src="https://i.ibb.co/tMhGr52N/Preview.png" alt="Preview" border="0"></a>
+## Update
+[2025-09-02]
+#### ChromaDB Enhancements
+Fixed several critical bugs in ChromaDB implementation, improving stability and reliability of database operations. The update focuses on better data persistence and retrieval functionality.
+
+#### Flexible Embedding Configuration
+You can now easily switch between different embedding models through configuration in `embedding.py`. The system supports both online API services and local models. Simply modify the model dictionary in the configuration file to use your preferred embedding solution.
+
 
 ## Introduction
 
