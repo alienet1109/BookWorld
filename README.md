@@ -167,14 +167,12 @@ python convert_sillytavern_cards_to_data.py
 Jiaqing Liang, Yanghua Xiao, Deqing Yang.
 
 ```bibtex
-@misc{ran2025bookworldnovelsinteractiveagent,
-      title={BookWorld: From Novels to Interactive Agent Societies for Creative Story Generation}, 
-      author={Yiting Ran and Xintao Wang and Tian Qiu and Jiaqing Liang and Yanghua Xiao and Deqing Yang},
-      year={2025},
-      eprint={2504.14538},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2504.14538}, 
+@inproceedings{ran2025bookworld,
+  title={BOOKWORLD: From Novels to Interactive Agent Societies for Story Creation},
+  author={Ran, Yiting and Wang, Xintao and Qiu, Tian and Liang, Jiaqing and Xiao, Yanghua and Yang, Deqing},
+  booktitle={Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},
+  pages={15898--15912},
+  year={2025}
 }
 ```
 ## License
