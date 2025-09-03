@@ -93,6 +93,8 @@ def build_world_agent_data(world_file_path,max_words = 30):
     return data,settings
 
 def build_db(data, db_name, db_type, embedding, save_type="persistent"):
+    if not data or not db_name:
+        return None
     if True:
         from modules.db.ChromaDB import ChromaDB
         db = ChromaDB(embedding,save_type)

@@ -21,8 +21,14 @@ class ChromaDB(BaseDB):
             raise Exception(f"Failed to initialize ChromaDB: {str(e)}")
 
     def init_from_data(self, data, db_name):
-        if not data or not db_name:
-            raise ValueError("Invalid data or db_name")
+        if not db_name:
+            raise ValueError("Invalid db_name")
+        if not data:
+            collection = self.client.get_collection(
+                    name=db_name,
+                    embedding_function=self.embedding
+                )
+            self.collections[db_name] = collection
         try:
             new_data_set = set(data)
             if db_name in [c.name for c in self.client.list_collections()]:
