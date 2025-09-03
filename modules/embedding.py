@@ -77,5 +77,5 @@ def get_embedding_model(embed_name, language='en'):
         base_url = online_model_dict[embed_name]["url"]
         return OpenAIEmbedding(model_name=model_name, base_url=base_url,api_key=api_key)
     else:
-        return EmbeddingModel(model_name)
+        return EmbeddingModel(embed_name)
 
