@@ -23,7 +23,8 @@ class RPAgent:
                  db_type: str = "chroma",
                  llm_name: str = "gpt-4o-mini",
                  llm = None,
-                 embedding_name: str = "bge",
+                 embedding_name: str = "bge-small",
+                 embedding = None
                  ):
         super(RPAgent, self).__init__()
         self.language: str  = language
@@ -46,10 +47,8 @@ class RPAgent:
             llm = get_models(llm_name)
         self.llm = llm
         
-        if 'embedding' not in globals():
-            global embedding
+        if embedding is None:
             embedding = get_embedding_model(embedding_name, language=self.language)
-        self.embedding = embedding
         
         self.db_name = clean_collection_name(f"role_{role_code}_{embedding_name}")
         self.db = build_db(data = self.role_data,
@@ -60,7 +59,7 @@ class RPAgent:
         self.world_db_name = ""
         self.memory = build_role_agent_memory(llm_name=llm_name,
                                               embedding_name = embedding_name,
-                                              embedding = self.embedding,
+                                              embedding = embedding,
                                               db_name = self.db_name.replace("role","memory"),
                                               language = self.language,
                                               type="naive"

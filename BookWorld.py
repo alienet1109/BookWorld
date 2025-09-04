@@ -12,6 +12,7 @@ from bw_utils import *
 from modules.main_role_agent import RPAgent
 from modules.world_agent import WorldAgent
 from modules.history_manager import HistoryManager
+from modules.embedding import get_embedding_model
 import argparse
 
 warnings.filterwarnings('ignore')
@@ -21,7 +22,7 @@ class Server():
                  preset_path: str,
                  world_llm_name: str,
                  role_llm_name: str,
-                 embedding_name:str = "bge-m3") :
+                 embedding_name:str = "bge-small") :
         """
         The initialization function of the system.
         
@@ -68,10 +69,13 @@ class Server():
         
         self.role_llm = get_models(role_llm_name)
         self.logger = get_logger(self.experiment_name)
+        
+        self.embedding = get_embedding_model(embedding_name, language=self.language)
         self.init_role_agents(role_agent_codes = role_agent_codes,
                             role_file_dir = role_file_dir,
                             world_file_path=world_file_path,
-                            llm = self.role_llm)
+                            llm = self.role_llm,
+                            embedding = self.embedding)
         
         if world_llm_name == role_llm_name:
             self.world_llm = self.role_llm
@@ -80,14 +84,16 @@ class Server():
         self.init_world_agent_from_file(world_file_path = world_file_path,
                                         map_file_path = map_file_path,
                                         loc_file_path = loc_file_path,
-                                        llm = self.world_llm)
+                                        llm = self.world_llm,
+                                        embedding = self.embedding)
     
     # Init
     def init_role_agents(self, 
                          role_agent_codes: List[str], 
                          role_file_dir:str, 
                          world_file_path:str,
-                         llm) -> None:
+                         llm=None,
+                         embedding=None) -> None:
         self.role_codes: List[str] = role_agent_codes
         self.role_agents: Dict[str, RPAgent] = {}
         
@@ -101,6 +107,7 @@ class Server():
                                                       llm_name = self.role_llm_name,
                                                       llm = llm,
                                                       embedding_name=self.embedding_name,
+                                                      embedding = embedding
                                                       )
                 # print(f"{role_code} Initialized.")
             else:
@@ -110,12 +117,15 @@ class Server():
                                    world_file_path: str, 
                                    map_file_path: str,
                                    loc_file_path: str,
-                                   llm) -> None:
+                                   llm=None,
+                                   embedding=None) -> None:
         self.world_agent: WorldAgent = WorldAgent(world_file_path = world_file_path, 
                                                   location_file_path = loc_file_path,
                                                   map_file_path = map_file_path, 
                                                   llm_name=self.world_llm_name,
                                                   llm = llm,
+                                                  embedding_name=self.embedding_name,
+                                                  embedding = embedding,
                                                   language=self.language)
         for role_code in self.role_agents:
             self.role_agents[role_code].world_db = self.world_agent.db

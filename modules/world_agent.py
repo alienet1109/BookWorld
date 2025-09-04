@@ -14,12 +14,15 @@ class WorldAgent:
                  world_description: str = "",
                  llm_name: str = "gpt-4o-mini",
                  llm = None,
-                 embedding_name: str = "bge",
+                 embedding_name: str = "bge-small",
+                 embedding = None,
                  db_type: str = "chroma",
                  language: str = "zh",
                  ):
-        if llm == None:
+        if llm is None:
             llm = get_models(llm_name)
+        if embedding is None:
+            embedding = get_embedding_model(embedding_name, language=language)
         self.llm = llm
         self.world_info: Dict[str, Any] = load_json_file(world_file_path)
         self.world_name: str = self.world_info["world_name"]
@@ -36,10 +39,7 @@ class WorldAgent:
         self.init_from_file(map_file_path = map_file_path,
                             location_file_path = location_file_path)
         self.init_prompt()
-        
-        if 'embedding' not in globals():
-            global embedding
-            embedding = get_embedding_model(embedding_name, language=language)
+
             
         self.world_data,self.world_settings = build_world_agent_data(world_file_path = world_file_path, max_words = 50)
         self.db_name = clean_collection_name(f"settings_{source}_{embedding_name}")

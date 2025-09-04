@@ -11,6 +11,7 @@ import os
 class EmbeddingModel(EmbeddingFunction[Documents]):
     def __init__(self, model_name, language='en'):
         self.model_name = model_name
+        print(model_name)
         self.language = language
         cache_dir = "~/.cache/modelscope/hub"
         model_provider = model_name.split("/")[0]
@@ -53,6 +54,7 @@ class OpenAIEmbedding(EmbeddingFunction[Documents]):
             return self.client.embeddings.create(input=[input], model=self.model_name).data[0].embedding
         elif isinstance(input,list):
             return [self.client.embeddings.create(input=[sentence.replace("\n", " ")], model=self.model_name).data[0].embedding for sentence in input]
+
 def get_embedding_model(embed_name, language='en'):
     local_model_dict = {
         "bge-m3":"BAAI/bge-m3",
@@ -68,9 +70,12 @@ def get_embedding_model(embed_name, language='en'):
              "api_key_field":"OPENAI_API_KEY"},
 
     }
+    if embed_name in local_model_dict:
+        model_name = local_model_dict[embed_name]
+        return EmbeddingModel(model_name, language=language)
     if embed_name in online_model_dict:
         model_name = online_model_dict[embed_name]["model_name"]
         api_key_field = online_model_dict[embed_name]["api_key_field"]
         base_url = online_model_dict[embed_name]["url"]
         return OpenAIEmbedding(model_name=model_name, base_url=base_url,api_key_field=api_key_field)
-
+    return EmbeddingModel(embed_name, language=language)

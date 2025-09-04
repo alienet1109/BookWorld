@@ -1,6 +1,6 @@
 {
-    "role_llm_name": "gemini-2.0-flash",
-    "world_llm_name": "gemini-2.0-flash",
+    "role_llm_name": "claude-3.5-sonnet",
+    "world_llm_name": "claude-3.5-sonnet",
     "embedding_model_name":"bge-small",
     "preset_path":"./experiment_presets/experiment_icefire.json",
     "if_save": 0,
