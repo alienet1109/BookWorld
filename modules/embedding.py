@@ -11,7 +11,6 @@ import os
 class EmbeddingModel(EmbeddingFunction[Documents]):
     def __init__(self, model_name, language='en'):
         self.model_name = model_name
-        print(model_name)
         self.language = language
         cache_dir = "~/.cache/modelscope/hub"
         model_provider = model_name.split("/")[0]

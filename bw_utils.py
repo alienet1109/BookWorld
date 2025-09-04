@@ -29,8 +29,6 @@ MODEL_NAME_DICT = {
 }
 
 def get_models(model_name):
-    from modules.llm.Qwen import Soku
-    return Soku("sokuidea",model_name)
     if os.getenv("OPENROUTER_API_KEY", default="") and model_name in MODEL_NAME_DICT:
         from modules.llm.OpenRouter import OpenRouter
         return OpenRouter(model=MODEL_NAME_DICT[model_name])
@@ -492,12 +490,3 @@ def cached(func):
                 pickle.dump(cache, open(cache_path, 'wb'))
             return result
     return wrapper
-if __name__ == "__main__":
-    # llm = Soku("idea","gemini-2.5-flash-06-17")
-    llm = get_models("gemini-2.5-flash-06-17")
-    llm.system_message("You are a helpful assistant.")
-    prompt = f"""
-你好
-"""
-    response = llm.chat(prompt)
-    print(response)
