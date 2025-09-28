@@ -188,5 +188,5 @@ This project is licensed under the [Apache License 2.0](https://www.apache.org/l
 
 BookWorld is a foundational framework that we aim to continuously optimize and enrich with custom modules. We welcome and greatly appreciate your suggestions and contributions!
 
-If you have any suggestions or would like to contribute, please contact us at: ytran23@m.fudan.edu.cn
+If you have any suggestions or would like to contribute, please contact us at: alienet1109@163.com
 
