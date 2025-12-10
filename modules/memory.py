@@ -1,15 +1,63 @@
 import sys
 sys.path.append("../")
+
 from bw_utils import *
 from modules.embedding import get_embedding_model
-from langchain_experimental.generative_agents import GenerativeAgentMemory
-from langchain.retrievers import TimeWeightedVectorStoreRetriever
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.llms import Tongyi,OpenAI
-from langchain_community.docstore import InMemoryDocstore
-from langchain_community.vectorstores import FAISS
+
+try:
+    from langchain_experimental.generative_agents.memory import GenerativeAgentMemory
+except Exception:
+    from langchain_experimental.generative_agents import GenerativeAgentMemory
+
+try:
+    from langchain_classic.retrievers import TimeWeightedVectorStoreRetriever
+except Exception:
+    try:
+        from langchain.retrievers import TimeWeightedVectorStoreRetriever
+    except Exception:
+        raise ImportError("装 langchain-classic")
+
+try:
+    from langchain_huggingface import HuggingFaceEmbeddings
+except Exception:
+    try:
+        from langchain_community.embeddings import HuggingFaceEmbeddings
+    except Exception:
+        raise ImportError("装 langchain-huggingface/langchain_community+sentence-transformers")
+
+try:
+    from langchain_community.llms.tongyi import Tongyi
+except Exception:
+    try:
+        from langchain_community.llms import Tongyi
+    except Exception:
+        Tongyi = None  
+
+try:
+    from langchain.llms import OpenAI
+except Exception:
+    try:
+        from langchain_community.llms import OpenAI
+    except Exception:
+        OpenAI = None
+
+try:
+    from langchain.docstore.in_memory import InMemoryDocstore
+except Exception:
+    from langchain_community.docstore.in_memory import InMemoryDocstore
+
+try:
+    from langchain.vectorstores.faiss import FAISS
+except Exception:
+    try:
+        from langchain.vectorstores import FAISS
+    except Exception:
+        from langchain_community.vectorstores.faiss import FAISS
+
+# 其它基础依赖
 import faiss
 import math
+
 
 def build_role_agent_memory(type = "ga",**kwargs):
     if type == "ga":
